@@ -34,17 +34,17 @@
 #################################################################
 
 dfo:Stock a owl:Class ;
-  rdfs:label "Stock (Population)"@en ;
-  rdfs:comment "A biologically meaningful salmon stock/population unit used in assessment and reporting."@en ;
+  rdfs:label "Stock"@en ;
+  rdfs:comment "A biologically meaningful but operationally focussed salmon demographic unit used in assessment and reporting."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
 dfo:ConservationUnit a owl:Class ;
-  rdfs:label "Conservation Unit (CU)"@en ;
+  rdfs:label "Conservation Unit"@en ;
   rdfs:comment "A Wild Salmon Policy Conservation Unit (CU)."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
 dfo:ManagementUnit a owl:Class ;
-  rdfs:label "Management Unit (MU)"@en ;
+  rdfs:label "Stock Management Unit"@en ;
   rdfs:comment "A management unit used for fisheries planning and reporting."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
@@ -61,8 +61,8 @@ dfo:EscapementMeasurement a owl:Class ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
 dfo:Indicator a owl:Class ;
-  rdfs:label "Indicator"@en ;
-  rdfs:comment "A derived assessment indicator used in FSAR or stock status reporting."@en ;
+  rdfs:label "Index"@en ;
+  rdfs:comment "A derived assessment index used in Fisheries Sciene Reports or stock status reporting."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
 dfo:Dataset a owl:Class ;
@@ -103,13 +103,13 @@ dfo:AerialCountMeasurement a owl:Class ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
 #################################################################
-# Genetics / GSI classes
+# Genetics Lab classes
 #################################################################
 
 dfo:GeneticSample a owl:Class ;
   rdfs:label "Genetic Sample"@en ;
   rdfs:comment "Tissue or material used in genetic stock identification or lab analyses."@en ;
-  rdfs:subClassOf dwc:MaterialSample ;
+  rdfs:subClassOf dwc:MaterialEntity ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
 dfo:GSIRun a owl:Class ;
@@ -127,6 +127,7 @@ dfo:ReportingUnit a owl:Class ;
   rdfs:label "Reporting Unit"@en ;
   rdfs:comment "Genetic reporting unit (repunit) used in GSI outputs."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # TODO: relate to CUs etc
 
 dfo:Assay a owl:Class ;
   rdfs:label "Assay"@en ;
@@ -142,7 +143,7 @@ dfo:Protocol a owl:Class ;
   rdfs:label "Protocol"@en ;
   rdfs:comment "A lab or computational protocol."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
-
+  # DISCUSS: Should this include field protocols?
 #################################################################
 # Escapement Method hierarchy (OWL-only, replaces SKOS)
 #################################################################
