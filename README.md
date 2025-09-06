@@ -2,9 +2,9 @@
 
 **Namespace:** `https://w3id.org/dfo/salmon#` (prefix: `dfo:`)  
 **License:** CC-BY 4.0  
-**Status:** Single-file, OWL-only, WebProtégé-ready
+**Status:** Draft Work in Progress. 
 
-The DFO Salmon Ontology is a **single OWL ontology** for salmon science data at Fisheries and Oceans Canada (DFO). It aligns with the Darwin Core (DwC) conceptual layer where helpful and adds DFO-specific concepts for stock assessment and genetics.  
+The DFO Salmon Ontology is an ** OWL ontology** for salmon science data at Fisheries and Oceans Canada (DFO). It aligns with the Darwin Core (DwC) conceptual layer where helpful and adds DFO-specific concepts for stock assessment and genetics.  
 **Goal:** Make salmon data interoperable, discoverable, and analyzable with minimal friction for scientists, data stewards, and managers.
 
 ---
