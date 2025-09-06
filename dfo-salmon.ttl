@@ -12,6 +12,8 @@
 
 #################################################################
 # Ontology header
+# NOTE: Keep IRIs stable; evolve labels/comments over time.
+# TODO(Release): Update dcterms:modified and owl:versionInfo/IRI on each release.
 #################################################################
 
 <https://w3id.org/dfo/salmon> a owl:Ontology ;
@@ -28,6 +30,7 @@
 
 #################################################################
 # Core classes
+# DISCUSS(Label style): Use parentheses in human labels (e.g., 'Stock (Population)') or keep terse labels and capture abbreviations elsewhere later.
 #################################################################
 
 dfo:Stock a owl:Class ;
@@ -77,6 +80,9 @@ dfo:EscapementSurveyEvent a owl:Class ;
   rdfs:comment "A survey event specifically for estimating escapement."@en ;
   rdfs:subClassOf dfo:SurveyEvent ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+# NOTE: The following are hyponyms (specializations) of EscapementMeasurement.
+# DISCUSS(Disjointness): Make these measurement subclasses mutually disjoint? See AllDisjoint axiom below.
 
 dfo:SonarCountMeasurement a owl:Class ;
   rdfs:label "Sonar Count Measurement"@en ;
@@ -146,6 +152,7 @@ dfo:EscapementMethod a owl:Class ;
   rdfs:comment "A methodological family used to estimate escapement."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
+# NOTE: Hyponyms of EscapementMethod. Optionally mark as disjoint (see below).
 dfo:AreaUnderTheCurve a owl:Class ;
   rdfs:label "Area Under the Curve"@en ;
   rdfs:comment "Estimation by integrating counts over time to approximate total escapement."@en ;
@@ -207,6 +214,16 @@ dfo:UnknownMethod a owl:Class ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
 #################################################################
+# Optional (Advanced) – Mutually disjoint method families
+# DECIDE: Enable if these method categories should never overlap.
+# owl:AllDisjointClasses [
+#   owl:members ( dfo:AreaUnderTheCurve dfo:AutomatedCountingMethods dfo:CalibratedTimeSeries
+#                 dfo:ExpansionMethods dfo:ExpertOpinion dfo:FixedStationCountAnalysis
+#                 dfo:MarkRecaptureAnalysis dfo:MathematicalOperations dfo:PeakCountAnalysis )
+# ] .
+#################################################################
+
+#################################################################
 # Object properties
 #################################################################
 
@@ -216,6 +233,7 @@ dfo:hasConservationUnit a owl:ObjectProperty ;
   rdfs:domain dfo:Stock ;
   rdfs:range dfo:ConservationUnit ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # DISCUSS(Cardinality): Is a Stock linked to exactly one CU, or can there be multiple? If exactly one, consider FunctionalProperty later.
 
 dfo:hasManagementUnit a owl:ObjectProperty ;
   rdfs:label "has management unit"@en ;
@@ -244,6 +262,7 @@ dfo:usesMethod a owl:ObjectProperty ;
   rdfs:domain dfo:EscapementMeasurement ;
   rdfs:range dfo:EscapementMethod ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # TODO(QA): Should every EscapementMeasurement have exactly one method? If yes, consider SHACL constraint later.
 
 dfo:hasIndicator a owl:ObjectProperty ;
   rdfs:label "has indicator"@en ;
@@ -251,6 +270,7 @@ dfo:hasIndicator a owl:ObjectProperty ;
   rdfs:domain dfo:Stock ;
   rdfs:range dfo:Indicator ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # DISCUSS(Cardinality): One stock → many indicators or a fixed set? Avoid FunctionalProperty for now.
 
 # Deprecated: prefer literal IRI pattern via dfo:taxonIRI
 dfo:taxon a owl:ObjectProperty ;
@@ -333,6 +353,7 @@ dfo:hasReportingUnit a owl:ObjectProperty ;
   rdfs:domain dfo:Stock ;
   rdfs:range dfo:ReportingUnit ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # DISCUSS(Modeling): Should RU also link to Stock directly, or only via CU? Current model allows Stock↔RU.
 
 dfo:ruExactMatch a owl:ObjectProperty ;
   rdfs:label "exact match to CU"@en ;
@@ -347,6 +368,23 @@ dfo:ruCloseMatch a owl:ObjectProperty ;
   rdfs:domain dfo:ReportingUnit ;
   rdfs:range dfo:ConservationUnit ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # TODO(Operational): Define authoritative RU↔CU crosswalk and criteria for 'close' vs 'exact'.
+
+#################################################################
+# OPTIONAL (Advanced) – Property characteristics & chains
+# DECIDE: Enable later if governance agrees.
+#################################################################
+
+# Example: If a Stock has only one CU, make hasConservationUnit functional.
+# dfo:hasConservationUnit a owl:FunctionalProperty .
+
+# Example chain: ofStock ∘ hasConservationUnit ⇒ (implied) sample-of-CU
+# NOTE: Would require a new property (e.g., ofConservationUnit). Shown commented for discussion.
+# dfo:ofConservationUnit a owl:ObjectProperty ;
+#   rdfs:label "of conservation unit"@en ;
+#   rdfs:comment "Inferred link from a sample to a CU via its stock."@en ;
+#   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+# dfo:ofConservationUnit owl:propertyChainAxiom ( dfo:ofStock dfo:hasConservationUnit ) .
 
 #################################################################
 # Datatype properties
@@ -358,6 +396,7 @@ dfo:eventDate a owl:DatatypeProperty ;
   rdfs:domain dfo:SurveyEvent ;
   rdfs:range xsd:date ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # DISCUSS(Time): Keep both date and dateTime start/end? Current pattern supports both day-level and interval events.
 
 dfo:eventStartDate a owl:DatatypeProperty ;
   rdfs:label "event start date"@en ;
@@ -379,6 +418,7 @@ dfo:countValue a owl:DatatypeProperty ;
   rdfs:domain dfo:EscapementMeasurement ;
   rdfs:range xsd:integer ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # DISCUSS(Units): For non-integer estimates, do we allow decimal? If yes, introduce estimateValue (xsd:decimal).
 
 dfo:countUnitIRI a owl:DatatypeProperty ;
   rdfs:label "count unit IRI"@en ;
@@ -386,6 +426,7 @@ dfo:countUnitIRI a owl:DatatypeProperty ;
   rdfs:domain dfo:EscapementMeasurement ;
   rdfs:range xsd:anyURI ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # DECIDE(Units): Standardize unit IRIs for counts (likely unit:Each). Document in README.
 
 dfo:region a owl:DatatypeProperty ;
   rdfs:label "region"@en ;
@@ -393,6 +434,7 @@ dfo:region a owl:DatatypeProperty ;
   rdfs:domain dfo:SurveyEvent ;
   rdfs:range xsd:string ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # TODO(Modeling): Replace with object link to a controlled region concept when ready.
 
 # Genetics literals
 
@@ -402,6 +444,7 @@ dfo:estimateValue a owl:DatatypeProperty ;
   rdfs:domain dfo:GSICompositionMeasurement ;
   rdfs:range xsd:decimal ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # DECIDE(Convention): Fraction vs percent. Pick one; enforce via SHACL later.
 
 dfo:estimateUnitIRI a owl:DatatypeProperty ;
   rdfs:label "estimate unit IRI"@en ;
@@ -409,6 +452,7 @@ dfo:estimateUnitIRI a owl:DatatypeProperty ;
   rdfs:domain dfo:GSICompositionMeasurement ;
   rdfs:range xsd:anyURI ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # TODO(QA): Add README table with approved unit IRIs and when to use each.
 
 dfo:standardError a owl:DatatypeProperty ;
   rdfs:label "standard error"@en ;
@@ -458,6 +502,7 @@ dfo:runDate a owl:DatatypeProperty ;
   rdfs:domain dfo:GSIRun ;
   rdfs:range xsd:date ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # DISCUSS(Date granularity): Do we need dateTime? time zone? For now, keep date only.
 
 dfo:runNote a owl:DatatypeProperty ;
   rdfs:label "run note"@en ;
@@ -494,3 +539,4 @@ dfo:taxonIRI a owl:DatatypeProperty ;
   rdfs:domain dfo:Stock ;
   rdfs:range xsd:anyURI ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+  # TODO(Registry): Confirm canonical registry (GBIF/ITIS/etc.) and document choice.

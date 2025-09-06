@@ -84,44 +84,75 @@ Optional:
 - `dcterms:description "Example usage."@en`
 - `oboInOwl:hasExactSynonym` (if relevant)
 
-Example:  
-`:GeneticSample a owl:Class ; rdfs:label "Genetic Sample"@en ; rdfs:comment "Tissue or material used in genetic stock identification or lab analyses."@en ; rdfs:subClassOf dwc:MaterialSample ; rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .`
-
 ### Object Properties
 
 - `a owl:ObjectProperty`
 - `rdfs:label` + `rdfs:comment`
-- Domain/Range only when helpful (avoid over-constraining early)
+- Domain/Range only when it helps data quality (avoid over-constraining early)
 - **Naming convention**: lowerCamelCase from subject → object (e.g., `aboutStock`, `usesMethod`)
-
-Example:  
-`:aboutStock a owl:ObjectProperty ; rdfs:label "about stock"@en ; rdfs:comment "Links a measurement to the stock it describes."@en ; rdfs:domain :EscapementMeasurement ; rdfs:range :Stock .`
+- Always add `rdfs:isDefinedBy`
 
 ### Datatype Properties
 
 - `a owl:DatatypeProperty`
 - `rdfs:label` + `rdfs:comment`
-- Range must be explicit XSD type (`xsd:string`, `xsd:decimal`, `xsd:date`, etc.)
-- Units & external references as **literals** (starter convention)
-
-Examples:  
-`:estimateValue   a owl:DatatypeProperty ; rdfs:range xsd:decimal .`  
-`:estimateUnitIRI a owl:DatatypeProperty ; rdfs:range xsd:anyURI .`  
-`:countValue      a owl:DatatypeProperty ; rdfs:range xsd:integer .`  
-`:countUnitIRI    a owl:DatatypeProperty ; rdfs:range xsd:anyURI .`
-
-### Minimum Fields Required
-
-Every new class or property must have:
-
-- `rdfs:label` (name)
-- `rdfs:comment` (definition)
-
-Optional but encouraged:
-
-- `dcterms:source`, `dcterms:description`, `oboInOwl:hasExactSynonym`
+- Range must be an explicit XSD type (`xsd:string`, `xsd:decimal`, `xsd:date`, etc.)
+- Units & IRIs as **literals** (starter convention)
+- Always add `rdfs:isDefinedBy`
 
 ---
+
+### Hierarchy & Relationships (NEW)
+
+OWL is most powerful when terms are related to one another. We will keep it simple:
+
+- **Subclassing required**: If a new class is a type of an existing one, assert `rdfs:subClassOf`.
+  - Example: `EscapementSurveyEvent ⊑ SurveyEvent`
+- **Equivalence optional**: Use `owl:equivalentClass` if two terms mean _exactly_ the same.
+  - Example: if we align a DFO term to an NCEAS term that is identical.
+- **Disjointness optional**: Use `owl:disjointWith` when two sibling classes should never overlap.
+  - Example: `AutomatedCountingMethods ⊓ ExpertOpinion = ⊥`
+- **Part–whole optional**: Use `hasPart` / `partOf` only when needed for compositions.
+- **Do not use SKOS broader/narrower**: Stay in OWL; subclassing covers hypernym/hyponym.
+
+---
+
+### Beginner-Friendly Conventions
+
+- **Keep labels and comments human-readable**: short, clear, plain language.
+- **Always check if a concept already exists** before creating a new one.
+- **Start flat, then nest**: define a new class with a label/comment; only add `subClassOf` once we’re sure it belongs under another.
+- **Examples are optional but helpful**: use `dcterms:description` to give a short usage case.
+- **Don’t panic about being “wrong”**: IRIs are permanent, but labels/comments can be refined over time.
+
+---
+
+### Intermediate Conventions
+
+- **Use domains/ranges with care**: add them where it helps catch obvious mistakes, but don’t over-constrain.
+- **Re-use external terms where practical**: align via `rdfs:subClassOf` or equivalence instead of inventing new classes.
+- **Deprecate, don’t delete**: if a term is replaced, mark with `owl:deprecated true` and point to the replacement with `rdfs:seeAlso`.
+- **Organize hierarchies thoughtfully**: group related methods, measurements, or events so the class tree is intuitive.
+- **Use consistent property naming**: lowerCamelCase, subject → object.
+
+---
+
+### Future Advanced Conventions (for later discussion)
+
+These are not required now but should be on our radar:
+
+- **OWL restrictions**: e.g., `someValuesFrom`, `allValuesFrom` for richer constraints.
+- **Property characteristics**: functional, inverse functional, transitive, symmetric, etc.
+  - Example: `hasConservationUnit` could eventually be functional (a Stock has only one CU).
+- **Property chains**: define reasoning shortcuts (e.g., Sample `ofStock` + Stock `hasCU` → Sample `ofCU`).
+- **Ontology modularization**: break into thematic modules (stock assessment, genetics, habitat) with clear integration.
+- **Logical definitions**: define classes based on property restrictions (e.g., “EscapementSurveyEvent ≡ SurveyEvent ⊓ ∃usesMethod.EscapementMethod”).
+- **Linking to external ontologies**: move from literal IRIs to object links with imports (GBIF, ENVO, OBI, QUDT).
+- **Reasoning & validation**: run OWL reasoners to classify automatically; use SHACL for data validation.
+
+---
+
+⚖️ **Key Principle:** Start simple with clear labels, comments, and subclassing. Add structure gradually as we gain confidence.
 
 ## Ontology Scope (Current)
 
