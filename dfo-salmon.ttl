@@ -31,17 +31,17 @@
 #################################################################
 
 dfo:Stock a owl:Class ;
-  rdfs:label "Stock (Population)"@en ;
+  rdfs:label "Stock"@en ;
   rdfs:comment "A biologically meaningful salmon stock/population unit used in assessment and reporting."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
 dfo:ConservationUnit a owl:Class ;
-  rdfs:label "Conservation Unit (CU)"@en ;
+  rdfs:label "Conservation Unit"@en ;
   rdfs:comment "A Wild Salmon Policy Conservation Unit (CU)."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
 dfo:ManagementUnit a owl:Class ;
-  rdfs:label "Management Unit (MU)"@en ;
+  rdfs:label "Stock Management Unit"@en ;
   rdfs:comment "A management unit used for fisheries planning and reporting."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
