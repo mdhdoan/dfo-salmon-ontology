@@ -30,21 +30,21 @@
 
 #################################################################
 # Core classes
-# DISCUSS(Label style): Use parentheses in human labels (e.g., 'Stock (Population)') or keep terse labels and capture abbreviations elsewhere later.
+# DISCUSS(Label style): Use parentheses (e.g., 'Stock (Population)') or keep terse labels.
 #################################################################
 
 dfo:Stock a owl:Class ;
-  rdfs:label "Stock"@en ;
+  rdfs:label "Stock (Population)"@en ;
   rdfs:comment "A biologically meaningful salmon stock/population unit used in assessment and reporting."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
 dfo:ConservationUnit a owl:Class ;
-  rdfs:label "Conservation Unit"@en ;
+  rdfs:label "Conservation Unit (CU)"@en ;
   rdfs:comment "A Wild Salmon Policy Conservation Unit (CU)."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
 dfo:ManagementUnit a owl:Class ;
-  rdfs:label "Stock Management Unit"@en ;
+  rdfs:label "Management Unit (MU)"@en ;
   rdfs:comment "A management unit used for fisheries planning and reporting."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
@@ -81,8 +81,8 @@ dfo:EscapementSurveyEvent a owl:Class ;
   rdfs:subClassOf dfo:SurveyEvent ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
-# NOTE: The following are hyponyms (specializations) of EscapementMeasurement.
-# DISCUSS(Disjointness): Make these measurement subclasses mutually disjoint? See AllDisjoint axiom below.
+# NOTE: Hyponyms (specializations) of EscapementMeasurement.
+# DISCUSS(Disjointness): Make these subclasses mutually disjoint? See commented axiom below.
 
 dfo:SonarCountMeasurement a owl:Class ;
   rdfs:label "Sonar Count Measurement"@en ;
@@ -224,23 +224,85 @@ dfo:UnknownMethod a owl:Class ;
 #################################################################
 
 #################################################################
-# Object properties
+# Roll-up / Partonomy pattern: MU ▶ CU ▶ Stock
+# Use these between INDIVIDUALS (e.g., Skeena MU, its CUs, specific Stocks).
 #################################################################
 
-dfo:hasConservationUnit a owl:ObjectProperty ;
-  rdfs:label "has conservation unit"@en ;
-  rdfs:comment "Associates a Stock with its WSP Conservation Unit."@en ;
-  rdfs:domain dfo:Stock ;
-  rdfs:range dfo:ConservationUnit ;
+# Generic membership (transitive)
+dfo:hasMember a owl:ObjectProperty , owl:TransitiveProperty ;
+  rdfs:label "has member"@en ;
+  rdfs:comment "Generic hierarchical containment/membership across management hierarchies (transitive)."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
-  # DISCUSS(Cardinality): Is a Stock linked to exactly one CU, or can there be multiple? If exactly one, consider FunctionalProperty later.
 
-dfo:hasManagementUnit a owl:ObjectProperty ;
-  rdfs:label "has management unit"@en ;
-  rdfs:comment "Associates a Stock with a management unit."@en ;
-  rdfs:domain dfo:Stock ;
-  rdfs:range dfo:ManagementUnit ;
+dfo:isMemberOf a owl:ObjectProperty ;
+  rdfs:label "is member of"@en ;
+  rdfs:comment "Inverse of hasMember."@en ;
+  owl:inverseOf dfo:hasMember ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+# Management Unit ▶ Conservation Unit
+dfo:hasMemberCU a owl:ObjectProperty ;
+  rdfs:label "has member CU"@en ;
+  rdfs:comment "A Management Unit contains a Conservation Unit."@en ;
+  rdfs:domain dfo:ManagementUnit ;
+  rdfs:range  dfo:ConservationUnit ;
+  rdfs:subPropertyOf dfo:hasMember ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:isMemberOfMU a owl:ObjectProperty ;
+  rdfs:label "is member of MU"@en ;
+  rdfs:comment "A Conservation Unit belongs to a Management Unit."@en ;
+  rdfs:domain dfo:ConservationUnit ;
+  rdfs:range  dfo:ManagementUnit ;
+  owl:inverseOf dfo:hasMemberCU ;
+  rdfs:subPropertyOf dfo:isMemberOf ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+# Conservation Unit ▶ Stock (Population)
+dfo:hasMemberStock a owl:ObjectProperty ;
+  rdfs:label "has member stock"@en ;
+  rdfs:comment "A Conservation Unit contains one or more Stocks (populations)."@en ;
+  rdfs:domain dfo:ConservationUnit ;
+  rdfs:range  dfo:Stock ;
+  rdfs:subPropertyOf dfo:hasMember ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:isMemberOfCU a owl:ObjectProperty ;
+  rdfs:label "is member of CU"@en ;
+  rdfs:comment "A Stock (population) belongs to a Conservation Unit."@en ;
+  rdfs:domain dfo:Stock ;
+  rdfs:range  dfo:ConservationUnit ;
+  owl:inverseOf dfo:hasMemberStock ;
+  rdfs:subPropertyOf dfo:isMemberOf ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+# Inference note:
+# Because hasMemberCU ⊑ hasMember and hasMemberStock ⊑ hasMember, and hasMember is transitive:
+# MU hasMemberCU CU  AND  CU hasMemberStock Stock  ⇒  MU hasMember Stock
+
+#################################################################
+# Optional class disjointness (safer modeling)
+# DECIDE: Enable to prevent an individual being both MU and CU, etc.
+# owl:AllDisjointClasses [ owl:members ( dfo:ManagementUnit dfo:ConservationUnit dfo:Stock ) ] .
+#################################################################
+
+#################################################################
+# Deprecation (clarify membership naming)
+#################################################################
+
+# Previously: Stock→CU as hasConservationUnit. Keep for back-compat but prefer isMemberOfCU.
+dfo:hasConservationUnit a owl:ObjectProperty ;
+  owl:deprecated "true"^^xsd:boolean ;
+  rdfs:label "has conservation unit (deprecated; use isMemberOfCU)"@en ;
+  rdfs:comment "Deprecated alias for Stock→CU membership. Use dfo:isMemberOfCU instead for clarity."@en ;
+  rdfs:domain dfo:Stock ;
+  rdfs:range  dfo:ConservationUnit ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> ;
+  owl:equivalentProperty dfo:isMemberOfCU .
+
+#################################################################
+# Object properties (measurement & genetics)
+#################################################################
 
 dfo:aboutStock a owl:ObjectProperty ;
   rdfs:label "about stock"@en ;
@@ -262,7 +324,7 @@ dfo:usesMethod a owl:ObjectProperty ;
   rdfs:domain dfo:EscapementMeasurement ;
   rdfs:range dfo:EscapementMethod ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
-  # TODO(QA): Should every EscapementMeasurement have exactly one method? If yes, consider SHACL constraint later.
+  # TODO(QA): Should every EscapementMeasurement have exactly one method? If yes, enforce in SHACL later.
 
 dfo:hasIndicator a owl:ObjectProperty ;
   rdfs:label "has indicator"@en ;
@@ -271,16 +333,6 @@ dfo:hasIndicator a owl:ObjectProperty ;
   rdfs:range dfo:Indicator ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
   # DISCUSS(Cardinality): One stock → many indicators or a fixed set? Avoid FunctionalProperty for now.
-
-# Deprecated: prefer literal IRI pattern via dfo:taxonIRI
-dfo:taxon a owl:ObjectProperty ;
-  owl:deprecated "true"^^xsd:boolean ;
-  rdfs:label "taxon (deprecated; use taxonIRI)"@en ;
-  rdfs:comment "Deprecated: replaced by dfo:taxonIRI literal IRI pattern. If you prefer object links, import/align explicitly later."@en ;
-  rdfs:domain dfo:Stock ;
-  rdfs:range rdfs:Resource ;
-  rdfs:subPropertyOf dwciri:taxonID ;
-  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
 # Genetics relations
 
@@ -375,16 +427,19 @@ dfo:ruCloseMatch a owl:ObjectProperty ;
 # DECIDE: Enable later if governance agrees.
 #################################################################
 
-# Example: If a Stock has only one CU, make hasConservationUnit functional.
-# dfo:hasConservationUnit a owl:FunctionalProperty .
+# Example: If a Stock has only one CU, make isMemberOfCU functional.
+# dfo:isMemberOfCU a owl:FunctionalProperty .
 
-# Example chain: ofStock ∘ hasConservationUnit ⇒ (implied) sample-of-CU
-# NOTE: Would require a new property (e.g., ofConservationUnit). Shown commented for discussion.
+# Example: If a CU belongs to one MU, make isMemberOfMU functional.
+# dfo:isMemberOfMU a owl:FunctionalProperty .
+
+# Example chain: Sample ofStock + Stock isMemberOfCU ⇒ Sample ofConservationUnit
+# (requires a new property ofConservationUnit)
 # dfo:ofConservationUnit a owl:ObjectProperty ;
 #   rdfs:label "of conservation unit"@en ;
 #   rdfs:comment "Inferred link from a sample to a CU via its stock."@en ;
 #   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
-# dfo:ofConservationUnit owl:propertyChainAxiom ( dfo:ofStock dfo:hasConservationUnit ) .
+# dfo:ofConservationUnit owl:propertyChainAxiom ( dfo:ofStock dfo:isMemberOfCU ) .
 
 #################################################################
 # Datatype properties
@@ -418,7 +473,7 @@ dfo:countValue a owl:DatatypeProperty ;
   rdfs:domain dfo:EscapementMeasurement ;
   rdfs:range xsd:integer ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
-  # DISCUSS(Units): For non-integer estimates, do we allow decimal? If yes, introduce estimateValue (xsd:decimal).
+  # DISCUSS(Units): For non-integer estimates, allow decimal? If yes, add a separate estimateValue (xsd:decimal).
 
 dfo:countUnitIRI a owl:DatatypeProperty ;
   rdfs:label "count unit IRI"@en ;
@@ -540,3 +595,13 @@ dfo:taxonIRI a owl:DatatypeProperty ;
   rdfs:range xsd:anyURI ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
   # TODO(Registry): Confirm canonical registry (GBIF/ITIS/etc.) and document choice.
+
+#################################################################
+# COMMENTED EXAMPLE INDIVIDUALS (for docs/training only)
+#################################################################
+# :Skeena_MU             a dfo:ManagementUnit .
+# :Skeena_Sockeye_CU     a dfo:ConservationUnit .
+# :Skeena_Sockeye_Stock  a dfo:Stock .
+# :Skeena_MU dfo:hasMemberCU :Skeena_Sockeye_CU .
+# :Skeena_Sockeye_CU dfo:hasMemberStock :Skeena_Sockeye_Stock .
+# # Reasoner will infer: :Skeena_MU dfo:hasMember :Skeena_Sockeye_Stock .

@@ -16,6 +16,10 @@ The DFO Salmon Ontology is a **single OWL ontology** for salmon science data at 
 - Workflow & Editing Guidelines
 - Modeling Approach
 - Conventions (Updated)
+- Hierarchy & Relationships
+- Membership / Roll-up Pattern (MU ▶ CU ▶ Stock)
+- Measurement & GSI Conventions
+- External Alignments (Pragmatic)
 - Ontology Scope
 - IRI & Versioning Policy
 - Contribution Workflow
@@ -38,9 +42,9 @@ The DFO Salmon Ontology is a **single OWL ontology** for salmon science data at 
 
 1. Create a new project in **Protégé Desktop** and upload `dfo-salmon.ttl`.
 2. Use **OntoGraf** to explore class/property relationships interactively.
-3. Export new .ttl file from Protégé.
-4. Discuss proposed edits in GitHub Issues.
-5. Approved issues edits are turned into Pull Requests applied directly to `dfo-salmon.ttl in GitHub
+3. Export the updated `.ttl` from Protégé.
+4. Discuss proposed edits in **GitHub Issues**.
+5. **Approved edits** become PRs applied directly to `dfo-salmon.ttl` in GitHub.
 6. **IRIs are permanent**: update labels/comments, not IRIs.
 
 ---
@@ -48,8 +52,8 @@ The DFO Salmon Ontology is a **single OWL ontology** for salmon science data at 
 ## Workflow & Editing Guidelines
 
 - We are maintaining **one ontology file** in OWL format (`.ttl`) on GitHub as the single source of truth.
-- All editing is done via GitHub Pull Requests (PRs).
-- Use WebProtégé + OntoGraf to visualize and verify connections.
+- All editing is done via **GitHub Pull Requests (PRs)**.
+- Use **WebProtégé + OntoGraf** to visualize and verify connections.
 - **Before creating a new term**: search WebProtégé to ensure it doesn’t already exist.
 - **Be consistent**: follow the conventions below.
 - **Keep it simple**: avoid complex restrictions (e.g., `someValuesFrom`) unless agreed.
@@ -68,7 +72,7 @@ The DFO Salmon Ontology is a **single OWL ontology** for salmon science data at 
 
 ---
 
-## Conventions
+## Conventions (Updated)
 
 ### Classes
 
@@ -90,7 +94,7 @@ Optional:
 - `a owl:ObjectProperty`
 - `rdfs:label` + `rdfs:comment`
 - Domain/Range only when it helps data quality (avoid over-constraining early)
-- **Naming convention**: lowerCamelCase from subject → object (e.g., `aboutStock`, `usesMethod`)
+- **Naming**: lowerCamelCase from subject → object (e.g., `aboutStock`, `usesMethod`)
 - Always add `rdfs:isDefinedBy`
 
 ### Datatype Properties
@@ -103,57 +107,79 @@ Optional:
 
 ---
 
-### Hierarchy & Relationships (NEW)
+## Hierarchy & Relationships
 
-OWL is most powerful when terms are related to one another. We will keep it simple:
-
-- **Subclassing required**: If a new class is a type of an existing one, assert `rdfs:subClassOf`.
-  - Example: `EscapementSurveyEvent ⊑ SurveyEvent`
-- **Equivalence optional**: Use `owl:equivalentClass` if two terms mean _exactly_ the same.
-  - Example: if we align a DFO term to an NCEAS term that is identical.
-- **Disjointness optional**: Use `owl:disjointWith` when two sibling classes should never overlap.
-  - Example: `AutomatedCountingMethods ⊓ ExpertOpinion = ⊥`
-- **Part–whole optional**: Use `hasPart` / `partOf` only when needed for compositions.
-- **Do not use SKOS broader/narrower**: Stay in OWL; subclassing covers hypernym/hyponym.
+- **Subclassing required**: If a new class is a type of an existing one, assert `rdfs:subClassOf`.  
+  _Example_: `EscapementSurveyEvent ⊑ SurveyEvent`.
+- **Equivalence (optional)**: Use `owl:equivalentClass` only when two classes are truly identical.
+- **Disjointness (optional)**: Use `owl:disjointWith` or `owl:AllDisjointClasses` if sibling classes must not overlap.  
+  _Example_: `AutomatedCountingMethods` vs `ExpertOpinion`.
+- **Part–whole (optional)**: Use `hasPart` / `partOf` sparingly; for management hierarchies prefer the **membership** pattern below.
+- **No SKOS broader/narrower** for taxonomies in v0.1; use OWL subclassing.
 
 ---
 
-### Beginner-Friendly Conventions
+## Membership / Roll-up Pattern (MU ▶ CU ▶ Stock)
 
-- **Keep labels and comments human-readable**: short, clear, plain language.
-- **Always check if a concept already exists** before creating a new one.
-- **Start flat, then nest**: define a new class with a label/comment; only add `subClassOf` once we’re sure it belongs under another.
-- **Examples are optional but helpful**: use `dcterms:description` to give a short usage case.
-- **Don’t panic about being “wrong”**: IRIs are permanent, but labels/comments can be refined over time.
+We explicitly model that **Management Units contain Conservation Units**, and **Conservation Units contain Stocks**.
+
+**Generic transitive membership**
+
+- `dfo:hasMember` (Transitive) and inverse `dfo:isMemberOf`.
+
+**Tier-specific subproperties**
+
+- MU ▶ CU: `dfo:hasMemberCU` / `dfo:isMemberOfMU`
+- CU ▶ Stock: `dfo:hasMemberStock` / `dfo:isMemberOfCU`
+
+**Why this pattern**
+
+- Human-readable, type-safe properties per tier.
+- Transitivity gives automatic roll-ups: MU `hasMemberCU` CU & CU `hasMemberStock` Stock ⇒ MU `hasMember` Stock (inferred).
+
+**Deprecation note**
+
+- Older `hasConservationUnit` (Stock→CU) is **deprecated**; prefer `isMemberOfCU` for clarity.
+
+**Governance to decide**
+
+- Can a **CU belong to multiple MUs**? If NO, later mark `isMemberOfMU` as `owl:FunctionalProperty`.
+- Can a **Stock belong to multiple CUs**? If NO, later mark `isMemberOfCU` as `owl:FunctionalProperty`.
+- Should **MU, CU, Stock** be declared **disjoint**? (recommended once stable)
+
+**Query ideas**
+
+- “All Stocks in MU X” → follow transitive `hasMember`.
+- “All CUs in MU X” → `hasMemberCU`.
+- “MU(s) for Stock Y” → chain `isMemberOf`.
 
 ---
 
-### Intermediate Conventions
+## Measurement & GSI Conventions
 
-- **Use domains/ranges with care**: add them where it helps catch obvious mistakes, but don’t over-constrain.
-- **Re-use external terms where practical**: align via `rdfs:subClassOf` or equivalence instead of inventing new classes.
-- **Deprecate, don’t delete**: if a term is replaced, mark with `owl:deprecated true` and point to the replacement with `rdfs:seeAlso`.
-- **Organize hierarchies thoughtfully**: group related methods, measurements, or events so the class tree is intuitive.
-- **Use consistent property naming**: lowerCamelCase, subject → object.
-
----
-
-### Future Advanced Conventions (for later discussion)
-
-These are not required now but should be on our radar:
-
-- **OWL restrictions**: e.g., `someValuesFrom`, `allValuesFrom` for richer constraints.
-- **Property characteristics**: functional, inverse functional, transitive, symmetric, etc.
-  - Example: `hasConservationUnit` could eventually be functional (a Stock has only one CU).
-- **Property chains**: define reasoning shortcuts (e.g., Sample `ofStock` + Stock `hasCU` → Sample `ofCU`).
-- **Ontology modularization**: break into thematic modules (stock assessment, genetics, habitat) with clear integration.
-- **Logical definitions**: define classes based on property restrictions (e.g., “EscapementSurveyEvent ≡ SurveyEvent ⊓ ∃usesMethod.EscapementMethod”).
-- **Linking to external ontologies**: move from literal IRIs to object links with imports (GBIF, ENVO, OBI, QUDT).
-- **Reasoning & validation**: run OWL reasoners to classify automatically; use SHACL for data validation.
+- **EscapementMeasurement** must connect to:
+  - `aboutStock` (which stock it describes)
+  - `observedDuring` (which SurveyEvent)
+  - `usesMethod` (family in `EscapementMethod`)
+- **Units**:
+  - Counts: store QUDT unit IRI in `countUnitIRI` (e.g., `http://qudt.org/vocab/unit/Each`).
+  - Composition estimates: adopt **one** convention and stick to it:
+    - **Fraction** 0–1 with `estimateUnitIRI = http://qudt.org/vocab/unit/One`, **or**
+    - **Percent** 0–100 with `estimateUnitIRI = http://qudt.org/vocab/unit/Percent`.
+  - Document the choice in this README; later enforce with SHACL.
+- **GSI specifics**:
+  - `GSICompositionMeasurement` is RU-centric; link via `aboutReportingUnit`.
+  - Maintain RU↔CU mapping policy; use `ruExactMatch` / `ruCloseMatch` with documented criteria.
+  - Future: property chain (e.g., `Sample ofStock` + `Stock isMemberOfCU` ⇒ `Sample ofConservationUnit`).
 
 ---
 
-⚖️ **Key Principle:** Start simple with clear labels, comments, and subclassing. Add structure gradually as we gain confidence.
+## External Alignments (Pragmatic)
+
+- Store external references as **literal IRIs** for now (e.g., `taxonIRI`, QUDT unit IRIs).
+- Plan a later move to **object links** via imports (GBIF, ENVO, OBI, QUDT) when stable.
+
+---
 
 ## Ontology Scope (Current)
 
@@ -168,24 +194,24 @@ These are not required now but should be on our radar:
 
 - `dfo:EscapementSurveyEvent`
 - `dfo:SonarCountMeasurement`, `dfo:WeirCountMeasurement`, `dfo:AerialCountMeasurement`
-- `dfo:EscapementMethod` + subclasses (`AreaUnderTheCurve`, `AutomatedCountingMethods`, `UnknownMethod`, …)
+- `dfo:EscapementMethod` + subclasses (`AreaUnderTheCurve`, `AutomatedCountingMethods`, `CalibratedTimeSeries`, `ExpansionMethods`, `ExpertOpinion`, `FixedStationCountAnalysis`, `MarkRecaptureAnalysis`, `MathematicalOperations`, `PeakCountAnalysis`, `UnknownMethod`)
 
 **Genetics (GSI)**
 
 - Classes: `dfo:GeneticSample`, `dfo:GSIRun`, `dfo:GSICompositionMeasurement`, `dfo:ReportingUnit`, `dfo:Assay`, `dfo:MarkerPanel`, `dfo:Protocol`
-- Object properties: `sampledDuring`, `ofStock`, `usedAssay`, `usedMarkerPanel`, `usedProtocol`, `analyzesSamples`, `producedMeasurement`, `derivedFromSample`, `aboutReportingUnit`, `hasReportingUnit`
-- Datatypes: `estimateValue`, `estimateUnitIRI`, `standardError`, `ciLower`, `ciUpper`, `confidenceLevel`, `methodName`, `baselineName`, `runDate`, `sampleID`, `tissueType`, `collectionMethod`
+- Object properties: `sampledDuring`, `ofStock`, `usedAssay`, `usedMarkerPanel`, `usedProtocol`, `analyzesSamples`, `producedMeasurement`, `derivedFromSample`, `aboutReportingUnit`, `hasReportingUnit`, `ruExactMatch`, `ruCloseMatch`
+- Datatypes: `estimateValue`, `estimateUnitIRI`, `standardError`, `ciLower`, `ciUpper`, `confidenceLevel`, `methodName`, `baselineName`, `runDate`, `runNote`, `sampleID`, `tissueType`, `collectionMethod`
 
 ---
 
 ## IRI & Versioning Policy
 
-- Base IRI: `https://w3id.org/dfo/salmon#`
-- Instances: mint under same base (`…#Stock/SkeenaSockeye`)
-- External alignments: keep as literals for now (e.g., GBIF taxon → `dfo:taxonIRI`)
-- Units: QUDT IRIs as literals in `…UnitIRI` properties
-- Versioning:
-  - Maintain `owl:versionInfo` in ontology header
+- **Base IRI**: `https://w3id.org/dfo/salmon#`
+- **Instances**: mint under same base (e.g., `…#Stock/SkeenaSockeye`)
+- **External alignments**: literal IRIs for now (e.g., GBIF taxon → `dfo:taxonIRI`)
+- **Units**: QUDT IRIs as literals in `…UnitIRI` properties
+- **Versioning**
+  - Maintain `owl:versionInfo` and `owl:versionIRI` in ontology header
   - Tag GitHub releases (e.g., `v0.1.0`)
   - Archive via Zenodo for DOI
 
@@ -193,12 +219,12 @@ These are not required now but should be on our radar:
 
 ## Contribution Workflow
 
-- Propose changes in GitHub Issues.
+- Propose changes in **GitHub Issues**.
 - Discuss/agree on definitions before structural edits.
-- Keep edits atomic (one conceptual change per PR).
-- Do not rename IRIs; if refactoring, deprecate and add `rdfs:seeAlso`.
+- Keep edits **atomic** (one conceptual change per PR).
+- Do not rename IRIs; if refactoring, **deprecate** and add `rdfs:seeAlso`.
 
-**Definition quality checklist:**
+**Definition quality checklist**
 
 - One clear concept per term
 - Human-readable label and comment
@@ -210,9 +236,9 @@ These are not required now but should be on our radar:
 ## Roadmap
 
 - Fill missing `rdfs:comment` definitions.
-- Add minimal individuals for examples.
-- Consider SHACL validation later.
-- Decide when to replace literal IRIs with object links.
+- Add minimal individuals for examples (docs/training).
+- Consider SHACL validation later (ranges, required fields).
+- Decide when to replace literal IRIs with object links (GBIF, QUDT).
 - Publish docs via pyLODE/Widoco.
 - Register W3ID redirects.
 
