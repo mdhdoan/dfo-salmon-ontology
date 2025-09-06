@@ -43,7 +43,7 @@ dfo:ConservationUnit a owl:Class ;
   rdfs:comment "A Wild Salmon Policy Conservation Unit (CU)."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
 
-dfo:ManagementUnit a owl:Class ;
+dfo:StockManagementUnit a owl:Class ;
   rdfs:label "Stock Management Unit"@en ;
   rdfs:comment "A management unit used for fisheries planning and reporting."@en ;
   rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
