@@ -36,11 +36,12 @@ The DFO Salmon Ontology is a **single OWL ontology** for salmon science data at 
 
 ## Quickstart (WebProtégé & OntoGraf)
 
-1. Create a new project in **WebProtégé** and upload `dfo-salmon.ttl`.
+1. Create a new project in **Protégé Desktop** and upload `dfo-salmon.ttl`.
 2. Use **OntoGraf** to explore class/property relationships interactively.
-3. Discuss proposed edits in GitHub Issues.
-4. Approved edits are applied directly to `dfo-salmon.ttl`.
-5. **IRIs are permanent**: update labels/comments, not IRIs.
+3. Export new .ttl file from Protégé.
+4. Discuss proposed edits in GitHub Issues.
+5. Approved issues edits are turned into Pull Requests applied directly to `dfo-salmon.ttl in GitHub
+6. **IRIs are permanent**: update labels/comments, not IRIs.
 
 ---
 
@@ -63,11 +64,11 @@ The DFO Salmon Ontology is a **single OWL ontology** for salmon science data at 
 - **Human + machine friendly**: every term has a label + definition.
 - **Domain fit**: initial focus on stock assessment and genetics; expand iteratively.
 - **Minimal constraints**: use domains/ranges only when they improve data quality.
-- **Visualization**: OntoGraf helps verify relationships and explain the ontology.
+- **Visualization**: OntoGraf in Protégé helps verify relationships and explain the ontology. WebVOWL is also handy for this.
 
 ---
 
-## Conventions (Updated)
+## Conventions
 
 ### Classes
 
