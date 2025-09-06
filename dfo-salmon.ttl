@@ -1,11 +1,496 @@
-@prefix dfo: <https://w3id.org/dfo/salmon#> .
-@prefix owl:  <http://www.w3.org/2002/07/owl#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dfo:     <https://w3id.org/dfo/salmon#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix schema:  <https://schema.org/> .
+@prefix dwc:     <http://rs.tdwg.org/dwc/terms/> .
+@prefix dwciri:  <http://rs.tdwg.org/dwc/iri/> .
+@prefix unit:    <http://qudt.org/vocab/unit/> .
+@prefix qudt:    <http://qudt.org/schema/qudt/> .
 
-dfo:Ontology a owl:Ontology ;
-  dcterms:title "DFO Salmon Ontology — Modular Start" ;
-  owl:imports dfo:OntologyCore , dfo:OntologyStock ;
-  dcterms:created "2025-08-21" ;
+#################################################################
+# Ontology header
+#################################################################
+
+<https://w3id.org/dfo/salmon> a owl:Ontology ;
+  dcterms:title "DFO Salmon Ontology"@en ;
+  dcterms:creator "DFO Pacific Science — Data Stewardship Unit"@en ;
+  dcterms:publisher "Fisheries and Oceans Canada (DFO) — Pacific Region Science Branch"@en ;
   dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
-  rdfs:comment "Top-level ontology that imports core and stock module. Genetics and governance modules can be added later." .
+  dcterms:created "2025-09-06"^^xsd:date ;
+  dcterms:description "Single-file, OWL-only ontology for DFO salmon data: stocks/CUs/MUs, survey events, escapement measurements, and GSI constructs; aligns to DwC via rdfs:subClassOf; external alignments initially as literal IRIs."@en ;
+  rdfs:seeAlso <https://github.com/dfo-pacific-science/salmon-ontology> ;
+  owl:versionInfo "0.1.0 (single-file, OWL-only)" ;
+  owl:versionIRI <https://w3id.org/dfo/salmon/0.1.0> ;
+  rdfs:comment "Single-file, OWL-only ontology for DFO salmon data. Aligns to Darwin Core classes via rdfs:subClassOf. No SKOS."@en .
+
+#################################################################
+# Core classes
+#################################################################
+
+dfo:Stock a owl:Class ;
+  rdfs:label "Stock (Population)"@en ;
+  rdfs:comment "A biologically meaningful salmon stock/population unit used in assessment and reporting."@en ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:ConservationUnit a owl:Class ;
+  rdfs:label "Conservation Unit (CU)"@en ;
+  rdfs:comment "A Wild Salmon Policy Conservation Unit (CU)."@en ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:ManagementUnit a owl:Class ;
+  rdfs:label "Management Unit (MU)"@en ;
+  rdfs:comment "A management unit used for fisheries planning and reporting."@en ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:SurveyEvent a owl:Class ;
+  rdfs:label "Survey Event"@en ;
+  rdfs:comment "A field event associated with monitoring (e.g., escapement survey, fence count, sonar period)."@en ;
+  rdfs:subClassOf dwc:Event ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:EscapementMeasurement a owl:Class ;
+  rdfs:label "Escapement Measurement"@en ;
+  rdfs:comment "A measurement or estimate of escapement tied to a stock and a survey event."@en ;
+  rdfs:subClassOf dwc:MeasurementOrFact ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:Indicator a owl:Class ;
+  rdfs:label "Indicator"@en ;
+  rdfs:comment "A derived assessment indicator used in FSAR or stock status reporting."@en ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:Dataset a owl:Class ;
+  rdfs:label "Dataset"@en ;
+  rdfs:comment "A data product registered in catalogues (e.g., GeoNetwork); aligns with schema:Dataset."@en ;
+  rdfs:subClassOf schema:Dataset ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+#################################################################
+# Stock assessment specializations
+#################################################################
+
+dfo:EscapementSurveyEvent a owl:Class ;
+  rdfs:label "Escapement Survey Event"@en ;
+  rdfs:comment "A survey event specifically for estimating escapement."@en ;
+  rdfs:subClassOf dfo:SurveyEvent ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:SonarCountMeasurement a owl:Class ;
+  rdfs:label "Sonar Count Measurement"@en ;
+  rdfs:comment "Escapement measurement produced using sonar systems (e.g., ARIS, DIDSON)."@en ;
+  rdfs:subClassOf dfo:EscapementMeasurement ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:WeirCountMeasurement a owl:Class ;
+  rdfs:label "Weir Count Measurement"@en ;
+  rdfs:comment "Escapement measurement produced via weir/fence counts."@en ;
+  rdfs:subClassOf dfo:EscapementMeasurement ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:AerialCountMeasurement a owl:Class ;
+  rdfs:label "Aerial Count Measurement"@en ;
+  rdfs:comment "Escapement measurement produced via aerial survey counts."@en ;
+  rdfs:subClassOf dfo:EscapementMeasurement ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+#################################################################
+# Genetics / GSI classes
+#################################################################
+
+dfo:GeneticSample a owl:Class ;
+  rdfs:label "Genetic Sample"@en ;
+  rdfs:comment "Tissue or material used in genetic stock identification or lab analyses."@en ;
+  rdfs:subClassOf dwc:MaterialSample ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:GSIRun a owl:Class ;
+  rdfs:label "GSI Run"@en ;
+  rdfs:comment "A computational run of GSI assignment (e.g., ONCOR, RUBIAS, BAYES) against a baseline."@en ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:GSICompositionMeasurement a owl:Class ;
+  rdfs:label "GSI Composition Measurement"@en ;
+  rdfs:comment "Estimated proportion of individuals assigned to a reporting unit in a GSI run."@en ;
+  rdfs:subClassOf dwc:MeasurementOrFact ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:ReportingUnit a owl:Class ;
+  rdfs:label "Reporting Unit"@en ;
+  rdfs:comment "Genetic reporting unit (repunit) used in GSI outputs."@en ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:Assay a owl:Class ;
+  rdfs:label "Assay"@en ;
+  rdfs:comment "A lab assay or test applied to genetic samples."@en ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:MarkerPanel a owl:Class ;
+  rdfs:label "Marker Panel"@en ;
+  rdfs:comment "A set of genetic markers (e.g., SNP panel) used for GSI."@en ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:Protocol a owl:Class ;
+  rdfs:label "Protocol"@en ;
+  rdfs:comment "A lab or computational protocol."@en ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+#################################################################
+# Escapement Method hierarchy (OWL-only, replaces SKOS)
+#################################################################
+
+dfo:EscapementMethod a owl:Class ;
+  rdfs:label "Escapement Method"@en ;
+  rdfs:comment "A methodological family used to estimate escapement."@en ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:AreaUnderTheCurve a owl:Class ;
+  rdfs:label "Area Under the Curve"@en ;
+  rdfs:comment "Estimation by integrating counts over time to approximate total escapement."@en ;
+  rdfs:subClassOf dfo:EscapementMethod ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:AutomatedCountingMethods a owl:Class ;
+  rdfs:label "Automated Counting Methods"@en ;
+  rdfs:comment "Technology-based direct counts at fixed sites (e.g., resistivity, video, sonar)."@en ;
+  rdfs:subClassOf dfo:EscapementMethod ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:CalibratedTimeSeries a owl:Class ;
+  rdfs:label "Calibrated Time Series"@en ;
+  rdfs:comment "Estimation using calibration of time series counts against independent measures."@en ;
+  rdfs:subClassOf dfo:EscapementMethod ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:ExpansionMethods a owl:Class ;
+  rdfs:label "Expansion Methods (multiply by factors)"@en ;
+  rdfs:comment "Extrapolate peak/sampled observations using expansion factors (e.g., redd multipliers)."@en ;
+  rdfs:subClassOf dfo:EscapementMethod ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:ExpertOpinion a owl:Class ;
+  rdfs:label "Expert Opinion"@en ;
+  rdfs:comment "Estimate derived via expert judgment considering multiple evidence sources."@en ;
+  rdfs:subClassOf dfo:EscapementMethod ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:FixedStationCountAnalysis a owl:Class ;
+  rdfs:label "Fixed Station Count Analysis"@en ;
+  rdfs:comment "Combine/aggregate manual counts from fixed monitoring locations."@en ;
+  rdfs:subClassOf dfo:EscapementMethod ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:MarkRecaptureAnalysis a owl:Class ;
+  rdfs:label "Mark-Recapture Analysis"@en ;
+  rdfs:comment "Statistical estimation from mark–recapture designs (e.g., Petersen, Jolly-Seber)."@en ;
+  rdfs:subClassOf dfo:EscapementMethod ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:MathematicalOperations a owl:Class ;
+  rdfs:label "Mathematical Operations"@en ;
+  rdfs:comment "Algebraic aggregation/adjustment of observations (add/subtract/multiply/divide)."@en ;
+  rdfs:subClassOf dfo:EscapementMethod ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:PeakCountAnalysis a owl:Class ;
+  rdfs:label "Peak Count Analysis"@en ;
+  rdfs:comment "Use the peak live (± dead) count as the basis for annual escapement."@en ;
+  rdfs:subClassOf dfo:EscapementMethod ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:UnknownMethod a owl:Class ;
+  rdfs:label "Unknown Method"@en ;
+  rdfs:comment "Method not documented or cannot be categorized."@en ;
+  rdfs:subClassOf dfo:EscapementMethod ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+#################################################################
+# Object properties
+#################################################################
+
+dfo:hasConservationUnit a owl:ObjectProperty ;
+  rdfs:label "has conservation unit"@en ;
+  rdfs:comment "Associates a Stock with its WSP Conservation Unit."@en ;
+  rdfs:domain dfo:Stock ;
+  rdfs:range dfo:ConservationUnit ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:hasManagementUnit a owl:ObjectProperty ;
+  rdfs:label "has management unit"@en ;
+  rdfs:comment "Associates a Stock with a management unit."@en ;
+  rdfs:domain dfo:Stock ;
+  rdfs:range dfo:ManagementUnit ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:aboutStock a owl:ObjectProperty ;
+  rdfs:label "about stock"@en ;
+  rdfs:comment "Links a measurement to the stock it describes."@en ;
+  rdfs:domain dfo:EscapementMeasurement ;
+  rdfs:range dfo:Stock ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:observedDuring a owl:ObjectProperty ;
+  rdfs:label "observed during"@en ;
+  rdfs:comment "Links a measurement to its survey event."@en ;
+  rdfs:domain dfo:EscapementMeasurement ;
+  rdfs:range dfo:SurveyEvent ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:usesMethod a owl:ObjectProperty ;
+  rdfs:label "uses method"@en ;
+  rdfs:comment "The escapement method family applied to produce the measurement."@en ;
+  rdfs:domain dfo:EscapementMeasurement ;
+  rdfs:range dfo:EscapementMethod ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:hasIndicator a owl:ObjectProperty ;
+  rdfs:label "has indicator"@en ;
+  rdfs:comment "A stock has an associated indicator time series or value."@en ;
+  rdfs:domain dfo:Stock ;
+  rdfs:range dfo:Indicator ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+# Deprecated: prefer literal IRI pattern via dfo:taxonIRI
+dfo:taxon a owl:ObjectProperty ;
+  owl:deprecated "true"^^xsd:boolean ;
+  rdfs:label "taxon (deprecated; use taxonIRI)"@en ;
+  rdfs:comment "Deprecated: replaced by dfo:taxonIRI literal IRI pattern. If you prefer object links, import/align explicitly later."@en ;
+  rdfs:domain dfo:Stock ;
+  rdfs:range rdfs:Resource ;
+  rdfs:subPropertyOf dwciri:taxonID ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+# Genetics relations
+
+dfo:sampledDuring a owl:ObjectProperty ;
+  rdfs:label "sampled during"@en ;
+  rdfs:comment "Genetic sample collected during a survey event."@en ;
+  rdfs:domain dfo:GeneticSample ;
+  rdfs:range dfo:SurveyEvent ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:ofStock a owl:ObjectProperty ;
+  rdfs:label "of stock"@en ;
+  rdfs:comment "Sample is associated with a stock (if known)."@en ;
+  rdfs:domain dfo:GeneticSample ;
+  rdfs:range dfo:Stock ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:usedAssay a owl:ObjectProperty ;
+  rdfs:label "used assay"@en ;
+  rdfs:comment "Links a GSI run to the assay used."@en ;
+  rdfs:domain dfo:GSIRun ;
+  rdfs:range dfo:Assay ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:usedMarkerPanel a owl:ObjectProperty ;
+  rdfs:label "used marker panel"@en ;
+  rdfs:comment "Links a GSI run to the marker panel applied."@en ;
+  rdfs:domain dfo:GSIRun ;
+  rdfs:range dfo:MarkerPanel ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:usedProtocol a owl:ObjectProperty ;
+  rdfs:label "used protocol"@en ;
+  rdfs:comment "Links a GSI run to the laboratory or computational protocol followed."@en ;
+  rdfs:domain dfo:GSIRun ;
+  rdfs:range dfo:Protocol ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:analyzesSamples a owl:ObjectProperty ;
+  rdfs:label "analyzes samples"@en ;
+  rdfs:comment "Indicates which genetic samples were analyzed in a GSI run."@en ;
+  rdfs:domain dfo:GSIRun ;
+  rdfs:range dfo:GeneticSample ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:producedMeasurement a owl:ObjectProperty ;
+  rdfs:label "produced measurement"@en ;
+  rdfs:comment "Points from a GSI run to the composition measurements it produced."@en ;
+  rdfs:domain dfo:GSIRun ;
+  rdfs:range dfo:GSICompositionMeasurement ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:derivedFromSample a owl:ObjectProperty ;
+  rdfs:label "derived from sample"@en ;
+  rdfs:comment "Indicates the sample(s) from which a composition measurement was derived."@en ;
+  rdfs:domain dfo:GSICompositionMeasurement ;
+  rdfs:range dfo:GeneticSample ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:aboutReportingUnit a owl:ObjectProperty ;
+  rdfs:label "about reporting unit"@en ;
+  rdfs:comment "Links a composition measurement to the reporting unit it describes."@en ;
+  rdfs:domain dfo:GSICompositionMeasurement ;
+  rdfs:range dfo:ReportingUnit ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:hasReportingUnit a owl:ObjectProperty ;
+  rdfs:label "has reporting unit"@en ;
+  rdfs:comment "Associates a stock with a corresponding genetic reporting unit."@en ;
+  rdfs:domain dfo:Stock ;
+  rdfs:range dfo:ReportingUnit ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:ruExactMatch a owl:ObjectProperty ;
+  rdfs:label "exact match to CU"@en ;
+  rdfs:comment "Reporting unit exactly matches the stated Conservation Unit."@en ;
+  rdfs:domain dfo:ReportingUnit ;
+  rdfs:range dfo:ConservationUnit ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:ruCloseMatch a owl:ObjectProperty ;
+  rdfs:label "close match to CU"@en ;
+  rdfs:comment "Reporting unit closely matches—but is not identical to—the stated Conservation Unit."@en ;
+  rdfs:domain dfo:ReportingUnit ;
+  rdfs:range dfo:ConservationUnit ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+#################################################################
+# Datatype properties
+#################################################################
+
+dfo:eventDate a owl:DatatypeProperty ;
+  rdfs:label "event date"@en ;
+  rdfs:comment "Date of the survey event (use for single-day events)."@en ;
+  rdfs:domain dfo:SurveyEvent ;
+  rdfs:range xsd:date ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:eventStartDate a owl:DatatypeProperty ;
+  rdfs:label "event start date"@en ;
+  rdfs:comment "Start date/time of the survey event (ISO 8601)."@en ;
+  rdfs:domain dfo:SurveyEvent ;
+  rdfs:range xsd:dateTime ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:eventEndDate a owl:DatatypeProperty ;
+  rdfs:label "event end date"@en ;
+  rdfs:comment "End date/time of the survey event (ISO 8601)."@en ;
+  rdfs:domain dfo:SurveyEvent ;
+  rdfs:range xsd:dateTime ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:countValue a owl:DatatypeProperty ;
+  rdfs:label "count value"@en ;
+  rdfs:comment "Escapement count or estimate (integer)."@en ;
+  rdfs:domain dfo:EscapementMeasurement ;
+  rdfs:range xsd:integer ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:countUnitIRI a owl:DatatypeProperty ;
+  rdfs:label "count unit IRI"@en ;
+  rdfs:comment "Unit IRI for the count/estimate (e.g., http://qudt.org/vocab/unit/Each)."@en ;
+  rdfs:domain dfo:EscapementMeasurement ;
+  rdfs:range xsd:anyURI ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:region a owl:DatatypeProperty ;
+  rdfs:label "region"@en ;
+  rdfs:comment "Region label for aggregation (temporary literal)."@en ;
+  rdfs:domain dfo:SurveyEvent ;
+  rdfs:range xsd:string ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+# Genetics literals
+
+dfo:estimateValue a owl:DatatypeProperty ;
+  rdfs:label "estimate value"@en ;
+  rdfs:comment "Numeric value of the composition estimate (choose convention: fraction 0–1 with unit:One, or percent 0–100 with unit:Percent)."@en ;
+  rdfs:domain dfo:GSICompositionMeasurement ;
+  rdfs:range xsd:decimal ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:estimateUnitIRI a owl:DatatypeProperty ;
+  rdfs:label "estimate unit IRI"@en ;
+  rdfs:comment "Unit IRI for estimate (e.g., http://qudt.org/vocab/unit/One or http://qudt.org/vocab/unit/Percent)."@en ;
+  rdfs:domain dfo:GSICompositionMeasurement ;
+  rdfs:range xsd:anyURI ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:standardError a owl:DatatypeProperty ;
+  rdfs:label "standard error"@en ;
+  rdfs:comment "Standard error associated with the composition estimate."@en ;
+  rdfs:domain dfo:GSICompositionMeasurement ;
+  rdfs:range xsd:decimal ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:ciLower a owl:DatatypeProperty ;
+  rdfs:label "confidence interval lower"@en ;
+  rdfs:comment "Lower bound of the confidence interval for the estimate."@en ;
+  rdfs:domain dfo:GSICompositionMeasurement ;
+  rdfs:range xsd:decimal ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:ciUpper a owl:DatatypeProperty ;
+  rdfs:label "confidence interval upper"@en ;
+  rdfs:comment "Upper bound of the confidence interval for the estimate."@en ;
+  rdfs:domain dfo:GSICompositionMeasurement ;
+  rdfs:range xsd:decimal ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:confidenceLevel a owl:DatatypeProperty ;
+  rdfs:label "confidence level"@en ;
+  rdfs:comment "Confidence level for the interval (e.g., 0.95 for 95% confidence)."@en ;
+  rdfs:domain dfo:GSICompositionMeasurement ;
+  rdfs:range xsd:decimal ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:methodName a owl:DatatypeProperty ;
+  rdfs:label "method name"@en ;
+  rdfs:comment "Human-readable name of the GSI assignment method/software."@en ;
+  rdfs:domain dfo:GSIRun ;
+  rdfs:range xsd:string ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:baselineName a owl:DatatypeProperty ;
+  rdfs:label "baseline name"@en ;
+  rdfs:comment "Name of the genetic baseline used for assignment."@en ;
+  rdfs:domain dfo:GSIRun ;
+  rdfs:range xsd:string ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:runDate a owl:DatatypeProperty ;
+  rdfs:label "run date"@en ;
+  rdfs:comment "Date the GSI run was executed."@en ;
+  rdfs:domain dfo:GSIRun ;
+  rdfs:range xsd:date ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:runNote a owl:DatatypeProperty ;
+  rdfs:label "run note"@en ;
+  rdfs:comment "Free-text notes about the run (parameters, caveats, etc.)."@en ;
+  rdfs:domain dfo:GSIRun ;
+  rdfs:range xsd:string ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:sampleID a owl:DatatypeProperty ;
+  rdfs:label "sample ID"@en ;
+  rdfs:comment "Local laboratory or field identifier for the genetic sample."@en ;
+  rdfs:domain dfo:GeneticSample ;
+  rdfs:range xsd:string ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:tissueType a owl:DatatypeProperty ;
+  rdfs:label "tissue type"@en ;
+  rdfs:comment "Type of tissue collected (e.g., fin clip, muscle)."@en ;
+  rdfs:domain dfo:GeneticSample ;
+  rdfs:range xsd:string ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+dfo:collectionMethod a owl:DatatypeProperty ;
+  rdfs:label "collection method"@en ;
+  rdfs:comment "Method used to collect the sample (e.g., seine, trap, biopsy)."@en ;
+  rdfs:domain dfo:GeneticSample ;
+  rdfs:range xsd:string ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
+
+# External alignment (literal IRI pattern)
+dfo:taxonIRI a owl:DatatypeProperty ;
+  rdfs:label "taxon IRI"@en ;
+  rdfs:comment "IRI identifying the taxon (e.g., GBIF Backbone Taxonomy). Stored as a literal IRI for pragmatic alignment without imports."@en ;
+  rdfs:domain dfo:Stock ;
+  rdfs:range xsd:anyURI ;
+  rdfs:isDefinedBy <https://w3id.org/dfo/salmon> .
