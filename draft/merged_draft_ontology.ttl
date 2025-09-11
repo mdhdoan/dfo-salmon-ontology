@@ -1,6 +1,3 @@
-# Merged ontology snapshot
-# Source files: draft_environment_information.ttl, draft_inspection_information.ttl, draft_salmon_information.ttl
-
 @prefix :        <http://example.org/salmon-inspections#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
@@ -8,11 +5,8 @@
 @prefix ro:      <http://purl.obolibrary.org/obo/RO_> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 @prefix geo:     <http://www.w3.org/2003/01/geo/wgs84_pos#> .
-@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 
 
-
-### Begin: draft_environment_information.ttl
 ### Root classes
 :Environmental a rdfs:Class ;
     rdfs:label "Environmental Factors" ;
@@ -464,10 +458,15 @@
   :identifierCode "WA-OR-WB-778899" ;
   :identifierScheme "State Waterbody Index" ;
   :issuingAuthority "WA Dept. of Ecology / OR DEQ" .
-### End: draft_environment_information.ttl
 
+@prefix :        <http://example.org/salmon-inspections#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ro:      <http://purl.obolibrary.org/obo/RO_> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix geo:     <http://www.w3.org/2003/01/geo/wgs84_pos#> .
 
-### Begin: draft_inspection_information.ttl
 ### ——— Inspection branch ———
 
 :Inspection a rdfs:Class ;
@@ -745,205 +744,415 @@
   :fishCount 42 ;
   :inspectionTime "2025-08-21T09:30:00-07:00"^^xsd:dateTime ;
   :notes "Two active redds; bear foraging on carcasses near riffle; visibility fair; culvert intact." .
-### End: draft_inspection_information.ttl
 
+@prefix : <http://example.org/salmon-inspections#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-### Begin: draft_salmon_information.ttl
-### Root classes
+:BearPredator a rdfs:Class ;
+    rdfs:label "Bear" ;
+    :description "Common along spawning streams; note intensity and location." ;
+    :indicativeOfImpact :PredationPressure ;
+    dcterms:source <https://en.wikipedia.org/wiki/Brown_bear#Diet> ;
+    rdfs:subClassOf :PredatorObservation ;
+    skos:definition "Observation of bears preying upon or scavenging salmon." .
+
+:BiologicalActivity a rdfs:Class ;
+    rdfs:label "Biological Activities" ;
+    :description "Use subclasses to categorize intensity." ;
+    dcterms:source <https://en.wikipedia.org/wiki/Salmon_run> ;
+    rdfs:subClassOf :Salmon ;
+    skos:definition "Observed level of salmon biological activity (e.g., feeding, holding, spawning) during inspection." .
+
+:EnhancedActivity a rdfs:Class ;
+    rdfs:label "Enhanced Activity" ;
+    :description "Examples: unusually dense holding/spawning, strong aggregation." ;
+    dcterms:source <https://en.wikipedia.org/wiki/Animal_behavior> ;
+    rdfs:subClassOf :BiologicalActivity ;
+    skos:definition "Activity levels above typical expectations for the site and season." .
+
 :Environmental a rdfs:Class ;
     rdfs:label "Environmental Factors" ;
     :description "Environmental features relevant to salmon stream inspections." .
 
 :InspectionDetails a rdfs:Class ;
     rdfs:label "Inspection Details" .
-### ——— Salmon branch ———
-
-:Salmon a rdfs:Class ;
-  rdfs:label "Salmon Characteristics" ;
-  :description "Biological states, observations, and pressures relevant to salmon during inspections." .
-
-### Relation for salmon observations → impacts
-:indicativeOfImpact a rdfs:Property ;
-  rdfs:label "indicative of impact" ;
-  rdfs:domain :Salmon ;
-  rdfs:range  :Impact ;
-  :description "Links a salmon observation to an impact it suggests is present (e.g., predation pressure, sedimentation)." .
-
-### Additional impact for predators
-:PredationPressure a rdfs:Class ;
-  rdfs:subClassOf :Impact ;
-  rdfs:label "Predation Pressure" ;
-  skos:definition "Elevated risk of mortality or injury to salmon due to predator presence and activity." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Predation> ;
-  :description "Use when predators are actively foraging or concentrated near salmon." .
-
-### Life stages & reproduction
-:Juvenile a rdfs:Class ;
-  rdfs:subClassOf :Salmon ;
-  rdfs:label "Juvenile" ;
-  skos:definition "A young salmon prior to reaching sexual maturity." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Juvenile_(organism)> ;
-  :description "Covers fry, parr, and smolt observations if not otherwise specified." .
-
-:Jack a rdfs:Class ;
-  rdfs:subClassOf :Salmon ;
-  rdfs:label "Jack" ;
-  skos:definition "A precociously maturing male salmon that returns to spawn at a younger age and smaller size than typical adults." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Chinook_salmon#Life_cycle> ;
-  :description "Often observed among returning males; size-based field notes can identify jacks." .
-
-:Redd a rdfs:Class ;
-  rdfs:subClassOf :Salmon ;
-  rdfs:label "Redd" ;
-  skos:definition "A nest excavated by a female salmon in gravel substrate for depositing eggs." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Redd> ;
-  :description "Record presence/condition of redds in spawning reaches." .
-
-### Demography & condition
-:VariationInSexRatio a rdfs:Class ;
-  rdfs:subClassOf :Salmon ;
-  rdfs:label "Variation in Sex Ratio" ;
-  skos:definition "An observed deviation from the expected proportion of males to females in a salmon group." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Sex_ratio> ;
-  :description "Note skew (e.g., male-biased, female-biased) and context (run timing, location)." ;
-  :indicativeOfImpact :ReducedConnectivity .
-
-:UnusualMortality a rdfs:Class ;
-  rdfs:subClassOf :Salmon ;
-  rdfs:label "Unusual Mortalities" ;
-  skos:definition "Elevated or atypical mortality of salmon beyond expected baseline for the season or site." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Fish_kill> ;
-  :description "Use when mortality appears clustered, sudden, or cause-specific (e.g., thermal, disease)." ;
-  :indicativeOfImpact :ReducedConnectivity .
-
-### Habitat pressure
-:SpawningHabitatDegradation a rdfs:Class ;
-  rdfs:subClassOf :Salmon ;
-  rdfs:label "Spawning Habitat Degradation" ;
-  skos:definition "A decline in the quality of gravel spawning habitat due to factors such as fine sediment, scouring, or pollution." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Habitat_destruction> ;
-  :description "Link to observed environmental drivers (e.g., bank erosion, flood) if known." ;
-  :indicativeOfImpact :IncreasedSedimentation , :SpawningHabitatScour .
-
-### Biological activity level
-:BiologicalActivity a rdfs:Class ;
-  rdfs:subClassOf :Salmon ;
-  rdfs:label "Biological Activities" ;
-  skos:definition "Observed level of salmon biological activity (e.g., feeding, holding, spawning) during inspection." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Salmon_run> ;
-  :description "Use subclasses to categorize intensity." .
-
-:EnhancedActivity a rdfs:Class ;
-  rdfs:subClassOf :BiologicalActivity ;
-  rdfs:label "Enhanced Activity" ;
-  skos:definition "Activity levels above typical expectations for the site and season." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Animal_behavior> ;
-  :description "Examples: unusually dense holding/spawning, strong aggregation." .
 
 :IntenseActivity a rdfs:Class ;
-  rdfs:subClassOf :BiologicalActivity ;
-  rdfs:label "Intense Activity" ;
-  skos:definition "Markedly elevated activity characterized by conspicuous behaviors (e.g., active spawning, aggressive interactions)." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Animal_behavior> ;
-  :description "Consider noting trigger (flow spike, temperature change)." .
+    rdfs:label "Intense Activity" ;
+    :description "Consider noting trigger (flow spike, temperature change)." ;
+    dcterms:source <https://en.wikipedia.org/wiki/Animal_behavior> ;
+    rdfs:subClassOf :BiologicalActivity ;
+    skos:definition "Markedly elevated activity characterized by conspicuous behaviors (e.g., active spawning, aggressive interactions)." .
 
-### Predators
+:Jack a rdfs:Class ;
+    rdfs:label "Jack" ;
+    :description "Often observed among returning males; size-based field notes can identify jacks." ;
+    dcterms:source <https://en.wikipedia.org/wiki/Chinook_salmon#Life_cycle> ;
+    rdfs:subClassOf :Salmon ;
+    skos:definition "A precociously maturing male salmon that returns to spawn at a younger age and smaller size than typical adults." .
+
+:Juvenile a rdfs:Class ;
+    rdfs:label "Juvenile" ;
+    :description "Covers fry, parr, and smolt observations if not otherwise specified." ;
+    dcterms:source <https://en.wikipedia.org/wiki/Juvenile_(organism)> ;
+    rdfs:subClassOf :Salmon ;
+    skos:definition "A young salmon prior to reaching sexual maturity." .
+
+:PredationPressure a rdfs:Class ;
+    rdfs:label "Predation Pressure" ;
+    :description "Use when predators are actively foraging or concentrated near salmon." ;
+    dcterms:source <https://en.wikipedia.org/wiki/Predation> ;
+    rdfs:subClassOf :Impact ;
+    skos:definition "Elevated risk of mortality or injury to salmon due to predator presence and activity." .
+
 :PredatorObservation a rdfs:Class ;
-  rdfs:subClassOf :Salmon ;
-  rdfs:label "Predators" ;
-  skos:definition "Observation of predators interacting with or near salmon." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Predation> ;
-  :description "Document predator type and activity (foraging, presence, scavenging)." ;
-  :indicativeOfImpact :PredationPressure .
+    rdfs:label "Predators" ;
+    :description "Document predator type and activity (foraging, presence, scavenging)." ;
+    :indicativeOfImpact :PredationPressure ;
+    dcterms:source <https://en.wikipedia.org/wiki/Predation> ;
+    rdfs:subClassOf :Salmon ;
+    skos:definition "Observation of predators interacting with or near salmon." .
 
-:BearPredator a rdfs:Class ;
-  rdfs:subClassOf :PredatorObservation ;
-  rdfs:label "Bear" ;
-  skos:definition "Observation of bears preying upon or scavenging salmon." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Brown_bear#Diet> ;
-  :description "Common along spawning streams; note intensity and location." ;
-  :indicativeOfImpact :PredationPressure .
+:Redd a rdfs:Class ;
+    rdfs:label "Redd" ;
+    :description "Record presence/condition of redds in spawning reaches." ;
+    dcterms:source <https://en.wikipedia.org/wiki/Redd> ;
+    rdfs:subClassOf :Salmon ;
+    skos:definition "A nest excavated by a female salmon in gravel substrate for depositing eggs." .
 
-:SealPredator a rdfs:Class ;
-  rdfs:subClassOf :PredatorObservation ;
-  rdfs:label "Seal" ;
-  skos:definition "Observation of seals preying upon salmon, typically in estuarine or nearshore reaches." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Harbor_seal#Diet> ;
-  :description "Record species if known (e.g., harbor seal) and behavior." ;
-  :indicativeOfImpact :PredationPressure .
-
-### Species (with region model)
+:Salmon a rdfs:Class ;
+    rdfs:label "Salmon Characteristics" ;
+    :description "Biological states, observations, and pressures relevant to salmon during inspections." .
 
 :SalmonSpecies a rdfs:Class ;
-  rdfs:subClassOf :Salmon ;
-  rdfs:label "Salmon Species" ;
-  skos:definition "Taxonomic species of salmon observed during inspections." ;
-  dcterms:source <https://en.wikipedia.org/wiki/Salmon> ;
-  :description "Covers species-specific observations, linked to habitat and inspection records." .
+    rdfs:label "Salmon Species" ;
+    :description "Covers species-specific observations, linked to habitat and inspection records." ;
+    dcterms:source <https://en.wikipedia.org/wiki/Salmon> ;
+    rdfs:subClassOf :Salmon ;
+    skos:definition "Taxonomic species of salmon observed during inspections." .
 
-:scientificName a rdfs:DatatypeProperty ;
-  rdfs:label "scientific name" ;
-  rdfs:domain :SalmonSpecies ;
-  rdfs:range  xsd:string ;
-  :description "The Latin binomial name of the salmon species." .
+:SealPredator a rdfs:Class ;
+    rdfs:label "Seal" ;
+    :description "Record species if known (e.g., harbor seal) and behavior." ;
+    :indicativeOfImpact :PredationPressure ;
+    dcterms:source <https://en.wikipedia.org/wiki/Harbor_seal#Diet> ;
+    rdfs:subClassOf :PredatorObservation ;
+    skos:definition "Observation of seals preying upon salmon, typically in estuarine or nearshore reaches." .
+
+:SpawningHabitatDegradation a rdfs:Class ;
+    rdfs:label "Spawning Habitat Degradation" ;
+    :description "Link to observed environmental drivers (e.g., bank erosion, flood) if known." ;
+    :indicativeOfImpact :IncreasedSedimentation,
+        :SpawningHabitatScour ;
+    dcterms:source <https://en.wikipedia.org/wiki/Habitat_destruction> ;
+    rdfs:subClassOf :Salmon ;
+    skos:definition "A decline in the quality of gravel spawning habitat due to factors such as fine sediment, scouring, or pollution." .
+
+:UnusualMortality a rdfs:Class ;
+    rdfs:label "Unusual Mortalities" ;
+    :description "Use when mortality appears clustered, sudden, or cause-specific (e.g., thermal, disease)." ;
+    :indicativeOfImpact :ReducedConnectivity ;
+    dcterms:source <https://en.wikipedia.org/wiki/Fish_kill> ;
+    rdfs:subClassOf :Salmon ;
+    skos:definition "Elevated or atypical mortality of salmon beyond expected baseline for the season or site." .
+
+:VariationInSexRatio a rdfs:Class ;
+    rdfs:label "Variation in Sex Ratio" ;
+    :description "Note skew (e.g., male-biased, female-biased) and context (run timing, location)." ;
+    :indicativeOfImpact :ReducedConnectivity ;
+    dcterms:source <https://en.wikipedia.org/wiki/Sex_ratio> ;
+    rdfs:subClassOf :Salmon ;
+    skos:definition "An observed deviation from the expected proportion of males to females in a salmon group." .
+
+:AtlanticSalmon a :SalmonSpecies ;
+    rdfs:label "Atlantic Salmon" ;
+    :description "Only salmon native to the Atlantic; widely farmed." ;
+    :foundInRegion :Europe,
+        :NorthAmerica,
+        :NorthAtlantic ;
+    :scientificName "Salmo salar" ;
+    dcterms:source <https://en.wikipedia.org/wiki/Atlantic_salmon> ;
+    skos:altLabel "Salmo salar" .
+
+:ChinookSalmon a :SalmonSpecies ;
+    rdfs:label "Chinook Salmon" ;
+    :description "Largest Pacific salmon species; highly valued for size and taste." ;
+    :foundInRegion :Alaska,
+        :BritishColumbia,
+        :California,
+        :NorthAmerica,
+        :NorthPacific,
+        :NortheastAsia,
+        :Russia,
+        :WashingtonState ;
+    :scientificName "Oncorhynchus tshawytscha" ;
+    dcterms:source <https://en.wikipedia.org/wiki/Chinook_salmon> ;
+    skos:altLabel "Blackmouth", "King Salmon", "Quinnat Salmon", "Spring Salmon", "Tyee Salmon" .
+
+:ChumSalmon a :SalmonSpecies ;
+    rdfs:label "Chum Salmon" ;
+    :description "Noted for large canine-like teeth during spawning; important subsistence fish." ;
+    :foundInRegion :Alaska,
+        :BritishColumbia,
+        :NorthPacific,
+        :NortheastAsia,
+        :Russia ;
+    :scientificName "Oncorhynchus keta" ;
+    dcterms:source <https://en.wikipedia.org/wiki/Chum_salmon> ;
+    skos:altLabel "Dog Salmon",
+        "Keta Salmon" .
+
+:CohoSalmon a :SalmonSpecies ;
+    rdfs:label "Coho Salmon" ;
+    :description "Known for acrobatic behavior and silver body; popular sport fish." ;
+    :foundInRegion :Alaska,
+        :BritishColumbia,
+        :California,
+        :NorthPacific,
+        :NortheastAsia,
+        :WashingtonState ;
+    :scientificName "Oncorhynchus kisutch" ;
+    dcterms:source <https://en.wikipedia.org/wiki/Coho_salmon> ;
+    skos:altLabel "Silver Salmon" .
+
+:PinkSalmon a :SalmonSpecies ;
+    rdfs:label "Pink Salmon" ;
+    :description "Smallest and most abundant Pacific salmon; two-year life cycle." ;
+    :foundInRegion :Alaska,
+        :BritishColumbia,
+        :NorthPacific,
+        :Russia,
+        :Siberia,
+        :WashingtonState ;
+    :scientificName "Oncorhynchus gorbuscha" ;
+    dcterms:source <https://en.wikipedia.org/wiki/Pink_salmon> ;
+    skos:altLabel "Humpback Salmon",
+        "Humpies" .
+
+:SockeyeSalmon a :SalmonSpecies ;
+    rdfs:label "Sockeye Salmon" ;
+    :description "Renowned for bright red spawning color and critical role in ecosystems." ;
+    :foundInRegion :Alaska,
+        :BritishColumbia,
+        :NorthPacific,
+        :Russia ;
+    :scientificName "Oncorhynchus nerka" ;
+    dcterms:source <https://en.wikipedia.org/wiki/Sockeye_salmon> ;
+    skos:altLabel "Blueback Salmon",
+        "Red Salmon" .
 
 :foundInRegion a rdfs:Property ;
-  rdfs:label "found in region" ;
-  rdfs:domain :SalmonSpecies ;
-  rdfs:range  :Region ;
-  :description "Links a salmon species to regions where it is typically found." .
+    rdfs:label "found in region" ;
+    :description "Links a salmon species to regions where it is typically found." ;
+    rdfs:domain :SalmonSpecies ;
+    rdfs:range :Region .
 
-### Chinook
-:ChinookSalmon a :SalmonSpecies ;
-  rdfs:label "Chinook Salmon" ;
-  skos:altLabel "King Salmon", "Spring Salmon", "Quinnat Salmon", "Blackmouth", "Tyee Salmon" ;
-  :scientificName "Oncorhynchus tshawytscha" ;
-  dcterms:source <https://en.wikipedia.org/wiki/Chinook_salmon> ;
-  :description "Largest Pacific salmon species; highly valued for size and taste." ;
-  :foundInRegion :NorthPacific, :NorthAmerica, :NortheastAsia, :Alaska, :BritishColumbia, :WashingtonState, :California, :Russia .
+:indicativeOfImpact a rdfs:Property ;
+    rdfs:label "indicative of impact" ;
+    :description "Links a salmon observation to an impact it suggests is present (e.g., predation pressure, sedimentation)." ;
+    rdfs:domain :Salmon ;
+    rdfs:range :Impact .
 
-### Pink
-:PinkSalmon a :SalmonSpecies ;
-  rdfs:label "Pink Salmon" ;
-  skos:altLabel "Humpback Salmon", "Humpies" ;
-  :scientificName "Oncorhynchus gorbuscha" ;
-  dcterms:source <https://en.wikipedia.org/wiki/Pink_salmon> ;
-  :description "Smallest and most abundant Pacific salmon; two-year life cycle." ;
-  :foundInRegion :NorthPacific, :Alaska, :BritishColumbia, :Russia, :Siberia, :WashingtonState .
+:scientificName a rdfs:DatatypeProperty ;
+    rdfs:label "scientific name" ;
+    :description "The Latin binomial name of the salmon species." ;
+    rdfs:domain :SalmonSpecies ;
+    rdfs:range xsd:string .
 
-### Coho
-:CohoSalmon a :SalmonSpecies ;
-  rdfs:label "Coho Salmon" ;
-  skos:altLabel "Silver Salmon" ;
-  :scientificName "Oncorhynchus kisutch" ;
-  dcterms:source <https://en.wikipedia.org/wiki/Coho_salmon> ;
-  :description "Known for acrobatic behavior and silver body; popular sport fish." ;
-  :foundInRegion :NorthPacific, :Alaska, :BritishColumbia, :WashingtonState, :California, :NortheastAsia .
+# -----------------------------
+# Salmon-related fields
+# -----------------------------
+:targetSpecies a owl:DatatypeProperty ;
+    rdfs:label "Target Species" ;
+    rdfs:domain :Salmon ;
+    rdfs:range xsd:string ;
+    rdfs:comment """The main species for which the enumeration effort is focused""" ;
+    dcterms:source "TBD (ISO/CABIN/NOAA/DFO/PSKF/Darwin Core)".
 
-### Atlantic
-:AtlanticSalmon a :SalmonSpecies ;
-  rdfs:label "Atlantic Salmon" ;
-  skos:altLabel "Salmo salar" ;
-  :scientificName "Salmo salar" ;
-  dcterms:source <https://en.wikipedia.org/wiki/Atlantic_salmon> ;
-  :description "Only salmon native to the Atlantic; widely farmed." ;
-  :foundInRegion :NorthAtlantic, :NorthAmerica, :Europe .
+:targetSpeciesCount a owl:DatatypeProperty ;
+    rdfs:label "Target Species Count" ;
+    rdfs:domain :Salmon ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """nan (Origin: :Salmon fields mapping)""" ;
+    dcterms:source "DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD." .
 
-### Chum
-:ChumSalmon a :SalmonSpecies ;
-  rdfs:label "Chum Salmon" ;
-  skos:altLabel "Dog Salmon", "Keta Salmon" ;
-  :scientificName "Oncorhynchus keta" ;
-  dcterms:source <https://en.wikipedia.org/wiki/Chum_salmon> ;
-  :description "Noted for large canine-like teeth during spawning; important subsistence fish." ;
-  :foundInRegion :NorthPacific, :Alaska, :BritishColumbia, :Russia, :NortheastAsia .
+:holders a owl:DatatypeProperty ;
+    rdfs:label "Holders" ;
+    rdfs:domain :Salmon ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """The number of fish observed in the Segment that are not paired, not actively spawning and are usually observed in pools schooled with other fish """;
+    dcterms:source """DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD""" ;
+    dcterms:source "TBD (ISO/CABIN/NOAA/DFO/PSKF/Darwin Core)".
 
-### Sockeye
-:SockeyeSalmon a :SalmonSpecies ;
-  rdfs:label "Sockeye Salmon" ;
-  skos:altLabel "Red Salmon", "Blueback Salmon" ;
-  :scientificName "Oncorhynchus nerka" ;
-  dcterms:source <https://en.wikipedia.org/wiki/Sockeye_salmon> ;
-  :description "Renowned for bright red spawning color and critical role in ecosystems." ;
-  :foundInRegion :NorthPacific, :Alaska, :BritishColumbia, :Russia .
-### End: draft_salmon_information.ttl
+:spawners a owl:DatatypeProperty ;
+    rdfs:label "Spawners" ;
+    rdfs:domain :Salmon ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """The number of fish observed in the Segment that are paired and/or actively spawning """;
+    dcterms:source """DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD.  Spawning fish may also be observed in pools but are distinguishable from holding fish by their white, abraded caudal (tail) fin. (Origin: :Salmon fields mapping)""" ;
+    dcterms:source "TBD (ISO/CABIN/NOAA/DFO/PSKF/Darwin Core)".
+
+:dead a owl:DatatypeProperty ;
+    rdfs:label "Dead" ;
+    rdfs:domain :Salmon ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """The number of dead adult fish observed in the Segment """;
+    dcterms:source """DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD""" ;
+    dcterms:source "TBD (ISO/CABIN/NOAA/DFO/PSKF/Darwin Core)".
+
+:reliability a owl:DatatypeProperty ;
+    rdfs:label "Reliability" ;
+    rdfs:domain :Salmon ;
+    rdfs:range xsd:string ;
+    rdfs:comment """The observer's estimate of the overall reliability of the count for the inspection. The estimate is based on the Stream Visibility and Environmental Conditons. (Origin: :Salmon fields mapping)""" ;
+    dcterms:source "TBD (ISO/CABIN/NOAA/DFO/PSKF/Darwin Core)".
+
+:distribution a owl:DatatypeProperty ;
+    rdfs:label "Distribution" ;
+    rdfs:domain :Salmon ;
+    rdfs:range xsd:string ;
+    rdfs:comment """This describes the distribution of the fish in the stream. (Origin: :Salmon fields mapping)""" ;
+    dcterms:source "TBD (ISO/CABIN/NOAA/DFO/PSKF/Darwin Core)".
+
+:countTotals a owl:DatatypeProperty ;
+    rdfs:label "Count Totals" ;
+    rdfs:domain :Salmon ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """nan (Origin: :Salmon fields mapping)""" ;
+    dcterms:source "DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD".
+
+:holders a owl:DatatypeProperty ;
+    rdfs:label "Holders" ;
+    rdfs:domain :Salmon ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """The sum of all Holders observed in all of the Segments inspected""" ;
+    dcterms:source """DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD.""" ;
+    dcterms:source "TBD (ISO/CABIN/NOAA/DFO/PSKF/Darwin Core)".
+
+:spawners a owl:DatatypeProperty ;
+    rdfs:label "Spawners" ;
+    rdfs:domain :Salmon ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """The sum of all Spawners observed in all of the Segments inspected""" ;
+    dcterms:source """DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD.""" ;
+    dcterms:source "TBD (ISO/CABIN/NOAA/DFO/PSKF/Darwin Core)".
+
+:dead a owl:DatatypeProperty ;
+    rdfs:label "Dead" ;
+    rdfs:domain :Salmon ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """The sum of all Dead (adults) observed in all of the Segments inspected""" ;
+    dcterms:source """DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD.""" ;
+    dcterms:source "TBD (ISO/CABIN/NOAA/DFO/PSKF/Darwin Core)".
+
+:biosamplesTaken a owl:DatatypeProperty ;
+    rdfs:label "Biosamples Taken" ;
+    rdfs:domain :Salmon ;
+    rdfs:range xsd:string ;
+    rdfs:comment """Indicates whether biosamples were taken during the inspection. (Origin: :Salmon fields mapping)""" ;
+    dcterms:source "TBD (ISO/CABIN/NOAA/DFO/PSKF/Darwin Core)".
+
+# ---- Auto-moved properties on 2025-09-11 for cross-file grouping ----
+
+:distribution a owl:DatatypeProperty ;
+    rdfs:label "Distribution" ;    
+    rdfs:comment """Cross-file tracking: grouped under Salmon/Biological; property is used by :Inspection across files for longitudinal comparisons""" ;
+    dcterms:source "TBD (DFO/ISO/CABIN/NOAA/PSKF/DwC)" ;
+    rdfs:comment """This describes the distribution of the fish in the stream""".
+
+:targetSpecies a owl:DatatypeProperty ;
+    rdfs:label """Target Species""" ;
+    rdfs:domain :Inspection ;
+    rdfs:range xsd:string ;
+    rdfs:comment """The main species for which the enumeration effort is focused""";
+    rdfs:comment """Cross-file tracking: grouped under Salmon/Biological; property is used by :Inspection across files for longitudinal comparisons.""" ; .
+
+:targetSpeciesCount a owl:DatatypeProperty ;
+    rdfs:label "Target Species Count" ;
+    rdfs:domain :Inspection ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """Cross-file tracking: grouped under Salmon/Biological; property is used by :Inspection across files for longitudinal comparisons""" ;
+    dcterms:source """DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD""" ;
+    dcterms:source "TBD (ISO/CABIN/NOAA/DFO/PSKF/Darwin Core)".
+
+:holders a owl:DatatypeProperty ;
+    rdfs:label "Holders" ;
+    rdfs:domain :Inspection ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """The number of fish observed in the Segment that are not paired, not actively spawning and are usually observed in pools schooled with other fish""";
+    rdfs:comment """Cross-file tracking: grouped under Salmon/Biological; property is used by :Inspection across files for longitudinal comparisons """;
+    dcterms:source "DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD".
+
+:spawners a owl:DatatypeProperty ;
+    rdfs:label "Spawners" ;
+    rdfs:domain :Inspection ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "The number of fish observed in the Segment that are paired and/or actively spawning";
+    rdfs:comment "Cross-file tracking: grouped under Salmon/Biological; property is used by :Inspection across files for longitudinal comparisons";
+    dcterms:source "DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD".
+
+:dead a owl:DatatypeProperty ;
+    rdfs:label "Dead" ;
+    rdfs:domain :Inspection ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """The number of dead adult fish observed in the Segment""";
+    rdfs:comment """Cross-file tracking: grouped under Salmon/Biological; property is used by :Inspection across files for longitudinal comparisons """;
+    dcterms:source "DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD".
+
+:reliability a owl:DatatypeProperty ;
+    rdfs:label "Reliability" ;
+    rdfs:domain :Inspection ;
+    rdfs:range xsd:string ;
+    rdfs:comment """The observer's estimate of the overall reliability of the count for the inspection""";
+    rdfs:comment """Cross-file tracking: grouped under Salmon/Biological; property is used by :Inspection across files for longitudinal comparisons.""".
+
+:distribution a owl:DatatypeProperty ;
+    rdfs:label "Distribution" ;
+    rdfs:domain :Inspection ;
+    rdfs:range xsd:string ;
+    rdfs:comment """This describes the distribution of the fish in the stream""";
+    rdfs:comment """Cross-file tracking: grouped under Salmon/Biological; property is used by :Inspection across files for longitudinal comparisons""" .
+
+:countTotals a owl:DatatypeProperty ;
+    rdfs:label "Count Totals" ;
+    rdfs:domain :Inspection ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """nan""" ;    
+    rdfs:comment """Cross-file tracking: grouped under Salmon/Biological; property is used by :Inspection across files for longitudinal comparisons """;
+    dcterms:source """DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD"""  ;
+    dcterms:source "TBD (ISO/CABIN/NOAA/DFO/PSKF/Darwin Core)".
+
+:holders a owl:DatatypeProperty ;
+    rdfs:label "Holders" ;
+    rdfs:domain :Inspection ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """The sum of all Holders observed in all of the Segments inspected""";
+    rdfs:comment """Cross-file tracking: grouped under Salmon/Biological; property is used by :Inspection across files for longitudinal comparisons """;
+    dcterms:source "DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD" .
+
+:spawners a owl:DatatypeProperty ;
+    rdfs:label "Spawners" ;
+    rdfs:domain :Inspection ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """The sum of all Spawners observed in all of the Segments inspected""";
+    rdfs:comment """Cross-file tracking: grouped under Salmon/Biological; property is used by :Inspection across files for longitudinal comparisons """;
+    dcterms:source "DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD".
+
+:dead a owl:DatatypeProperty ;
+    rdfs:label "Dead" ;
+    rdfs:domain :Inspection ;
+    rdfs:range xsd:integer ;
+    rdfs:comment """The sum of all Dead (adults) observed in all of the Segments inspected""";
+    rdfs:comment """Cross-file tracking: grouped under Salmon/Biological; property is used by :Inspection across files for longitudinal comparisons """;
+    dcterms:source """DFO Pacific Region — Spawning Ground Survey & Escapement Enumeration Guidance (visual counts; aerial/ground); citation details TBD""".
+
+:biosamplesTaken a owl:DatatypeProperty ;
+    rdfs:label "Biosamples Taken" ;
+    rdfs:domain :Inspection ;
+    rdfs:range xsd:string ;
+    rdfs:comment """Indicates whether biosamples were taken during the inspection""";
+    rdfs:comment """Cross-file tracking: grouped under Salmon/Biological; property is used by :Inspection across files for longitudinal comparisons""".
