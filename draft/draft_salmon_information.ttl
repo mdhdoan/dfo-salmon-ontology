@@ -1,0 +1,204 @@
+@prefix :        <http://example.org/salmon-inspections#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ro:      <http://purl.obolibrary.org/obo/RO_> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+
+### Root classes
+:Environmental a rdfs:Class ;
+    rdfs:label "Environmental Factors" ;
+    :description "Environmental features relevant to salmon stream inspections." .
+
+:InspectionDetails a rdfs:Class ;
+    rdfs:label "Inspection Details" .
+### ——— Salmon branch ———
+
+:Salmon a rdfs:Class ;
+  rdfs:label "Salmon Characteristics" ;
+  :description "Biological states, observations, and pressures relevant to salmon during inspections." .
+
+### Relation for salmon observations → impacts
+:indicativeOfImpact a rdfs:Property ;
+  rdfs:label "indicative of impact" ;
+  rdfs:domain :Salmon ;
+  rdfs:range  :Impact ;
+  :description "Links a salmon observation to an impact it suggests is present (e.g., predation pressure, sedimentation)." .
+
+### Additional impact for predators
+:PredationPressure a rdfs:Class ;
+  rdfs:subClassOf :Impact ;
+  rdfs:label "Predation Pressure" ;
+  skos:definition "Elevated risk of mortality or injury to salmon due to predator presence and activity." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Predation> ;
+  :description "Use when predators are actively foraging or concentrated near salmon." .
+
+### Life stages & reproduction
+:Juvenile a rdfs:Class ;
+  rdfs:subClassOf :Salmon ;
+  rdfs:label "Juvenile" ;
+  skos:definition "A young salmon prior to reaching sexual maturity." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Juvenile_(organism)> ;
+  :description "Covers fry, parr, and smolt observations if not otherwise specified." .
+
+:Jack a rdfs:Class ;
+  rdfs:subClassOf :Salmon ;
+  rdfs:label "Jack" ;
+  skos:definition "A precociously maturing male salmon that returns to spawn at a younger age and smaller size than typical adults." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Chinook_salmon#Life_cycle> ;
+  :description "Often observed among returning males; size-based field notes can identify jacks." .
+
+:Redd a rdfs:Class ;
+  rdfs:subClassOf :Salmon ;
+  rdfs:label "Redd" ;
+  skos:definition "A nest excavated by a female salmon in gravel substrate for depositing eggs." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Redd> ;
+  :description "Record presence/condition of redds in spawning reaches." .
+
+### Demography & condition
+:VariationInSexRatio a rdfs:Class ;
+  rdfs:subClassOf :Salmon ;
+  rdfs:label "Variation in Sex Ratio" ;
+  skos:definition "An observed deviation from the expected proportion of males to females in a salmon group." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Sex_ratio> ;
+  :description "Note skew (e.g., male-biased, female-biased) and context (run timing, location)." ;
+  :indicativeOfImpact :ReducedConnectivity .
+
+:UnusualMortality a rdfs:Class ;
+  rdfs:subClassOf :Salmon ;
+  rdfs:label "Unusual Mortalities" ;
+  skos:definition "Elevated or atypical mortality of salmon beyond expected baseline for the season or site." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Fish_kill> ;
+  :description "Use when mortality appears clustered, sudden, or cause-specific (e.g., thermal, disease)." ;
+  :indicativeOfImpact :ReducedConnectivity .
+
+### Habitat pressure
+:SpawningHabitatDegradation a rdfs:Class ;
+  rdfs:subClassOf :Salmon ;
+  rdfs:label "Spawning Habitat Degradation" ;
+  skos:definition "A decline in the quality of gravel spawning habitat due to factors such as fine sediment, scouring, or pollution." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Habitat_destruction> ;
+  :description "Link to observed environmental drivers (e.g., bank erosion, flood) if known." ;
+  :indicativeOfImpact :IncreasedSedimentation , :SpawningHabitatScour .
+
+### Biological activity level
+:BiologicalActivity a rdfs:Class ;
+  rdfs:subClassOf :Salmon ;
+  rdfs:label "Biological Activities" ;
+  skos:definition "Observed level of salmon biological activity (e.g., feeding, holding, spawning) during inspection." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Salmon_run> ;
+  :description "Use subclasses to categorize intensity." .
+
+:EnhancedActivity a rdfs:Class ;
+  rdfs:subClassOf :BiologicalActivity ;
+  rdfs:label "Enhanced Activity" ;
+  skos:definition "Activity levels above typical expectations for the site and season." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Animal_behavior> ;
+  :description "Examples: unusually dense holding/spawning, strong aggregation." .
+
+:IntenseActivity a rdfs:Class ;
+  rdfs:subClassOf :BiologicalActivity ;
+  rdfs:label "Intense Activity" ;
+  skos:definition "Markedly elevated activity characterized by conspicuous behaviors (e.g., active spawning, aggressive interactions)." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Animal_behavior> ;
+  :description "Consider noting trigger (flow spike, temperature change)." .
+
+### Predators
+:PredatorObservation a rdfs:Class ;
+  rdfs:subClassOf :Salmon ;
+  rdfs:label "Predators" ;
+  skos:definition "Observation of predators interacting with or near salmon." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Predation> ;
+  :description "Document predator type and activity (foraging, presence, scavenging)." ;
+  :indicativeOfImpact :PredationPressure .
+
+:BearPredator a rdfs:Class ;
+  rdfs:subClassOf :PredatorObservation ;
+  rdfs:label "Bear" ;
+  skos:definition "Observation of bears preying upon or scavenging salmon." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Brown_bear#Diet> ;
+  :description "Common along spawning streams; note intensity and location." ;
+  :indicativeOfImpact :PredationPressure .
+
+:SealPredator a rdfs:Class ;
+  rdfs:subClassOf :PredatorObservation ;
+  rdfs:label "Seal" ;
+  skos:definition "Observation of seals preying upon salmon, typically in estuarine or nearshore reaches." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Harbor_seal#Diet> ;
+  :description "Record species if known (e.g., harbor seal) and behavior." ;
+  :indicativeOfImpact :PredationPressure .
+
+### Species (with region model)
+
+:SalmonSpecies a rdfs:Class ;
+  rdfs:subClassOf :Salmon ;
+  rdfs:label "Salmon Species" ;
+  skos:definition "Taxonomic species of salmon observed during inspections." ;
+  dcterms:source <https://en.wikipedia.org/wiki/Salmon> ;
+  :description "Covers species-specific observations, linked to habitat and inspection records." .
+
+:scientificName a rdfs:DatatypeProperty ;
+  rdfs:label "scientific name" ;
+  rdfs:domain :SalmonSpecies ;
+  rdfs:range  xsd:string ;
+  :description "The Latin binomial name of the salmon species." .
+
+:foundInRegion a rdfs:Property ;
+  rdfs:label "found in region" ;
+  rdfs:domain :SalmonSpecies ;
+  rdfs:range  :Region ;
+  :description "Links a salmon species to regions where it is typically found." .
+
+### Chinook
+:ChinookSalmon a :SalmonSpecies ;
+  rdfs:label "Chinook Salmon" ;
+  skos:altLabel "King Salmon", "Spring Salmon", "Quinnat Salmon", "Blackmouth", "Tyee Salmon" ;
+  :scientificName "Oncorhynchus tshawytscha" ;
+  dcterms:source <https://en.wikipedia.org/wiki/Chinook_salmon> ;
+  :description "Largest Pacific salmon species; highly valued for size and taste." ;
+  :foundInRegion :NorthPacific, :NorthAmerica, :NortheastAsia, :Alaska, :BritishColumbia, :WashingtonState, :California, :Russia .
+
+### Pink
+:PinkSalmon a :SalmonSpecies ;
+  rdfs:label "Pink Salmon" ;
+  skos:altLabel "Humpback Salmon", "Humpies" ;
+  :scientificName "Oncorhynchus gorbuscha" ;
+  dcterms:source <https://en.wikipedia.org/wiki/Pink_salmon> ;
+  :description "Smallest and most abundant Pacific salmon; two-year life cycle." ;
+  :foundInRegion :NorthPacific, :Alaska, :BritishColumbia, :Russia, :Siberia, :WashingtonState .
+
+### Coho
+:CohoSalmon a :SalmonSpecies ;
+  rdfs:label "Coho Salmon" ;
+  skos:altLabel "Silver Salmon" ;
+  :scientificName "Oncorhynchus kisutch" ;
+  dcterms:source <https://en.wikipedia.org/wiki/Coho_salmon> ;
+  :description "Known for acrobatic behavior and silver body; popular sport fish." ;
+  :foundInRegion :NorthPacific, :Alaska, :BritishColumbia, :WashingtonState, :California, :NortheastAsia .
+
+### Atlantic
+:AtlanticSalmon a :SalmonSpecies ;
+  rdfs:label "Atlantic Salmon" ;
+  skos:altLabel "Salmo salar" ;
+  :scientificName "Salmo salar" ;
+  dcterms:source <https://en.wikipedia.org/wiki/Atlantic_salmon> ;
+  :description "Only salmon native to the Atlantic; widely farmed." ;
+  :foundInRegion :NorthAtlantic, :NorthAmerica, :Europe .
+
+### Chum
+:ChumSalmon a :SalmonSpecies ;
+  rdfs:label "Chum Salmon" ;
+  skos:altLabel "Dog Salmon", "Keta Salmon" ;
+  :scientificName "Oncorhynchus keta" ;
+  dcterms:source <https://en.wikipedia.org/wiki/Chum_salmon> ;
+  :description "Noted for large canine-like teeth during spawning; important subsistence fish." ;
+  :foundInRegion :NorthPacific, :Alaska, :BritishColumbia, :Russia, :NortheastAsia .
+
+### Sockeye
+:SockeyeSalmon a :SalmonSpecies ;
+  rdfs:label "Sockeye Salmon" ;
+  skos:altLabel "Red Salmon", "Blueback Salmon" ;
+  :scientificName "Oncorhynchus nerka" ;
+  dcterms:source <https://en.wikipedia.org/wiki/Sockeye_salmon> ;
+  :description "Renowned for bright red spawning color and critical role in ecosystems." ;
+  :foundInRegion :NorthPacific, :Alaska, :BritishColumbia, :Russia .
