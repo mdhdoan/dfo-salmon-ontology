@@ -5,6 +5,10 @@
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+:Salmon a rdfs:Class ;
+    rdfs:label "Salmon Characteristics" ;
+    :description "Biological states, observations, and pressures relevant to salmon during inspections." .
+
 :BearPredator a rdfs:Class ;
     rdfs:label "Bear" ;
     :description "Common along spawning streams; note intensity and location." ;
@@ -76,10 +80,6 @@
     dcterms:source <https://en.wikipedia.org/wiki/Redd> ;
     rdfs:subClassOf :Salmon ;
     skos:definition "A nest excavated by a female salmon in gravel substrate for depositing eggs." .
-
-:Salmon a rdfs:Class ;
-    rdfs:label "Salmon Characteristics" ;
-    :description "Biological states, observations, and pressures relevant to salmon during inspections." .
 
 :SalmonSpecies a rdfs:Class ;
     rdfs:label "Salmon Species" ;

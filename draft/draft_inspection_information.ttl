@@ -71,49 +71,61 @@
   :description "Methods conducted from aircraft for wide-area or rapid assessment." .
 
 ### Ground methods
-:Bankwalk a :GroundMethod ;
+:Bankwalk a rdfs:Class ;
+  rdfs:subClassOf :GroundMethod ;
   rdfs:label "Bankwalk" ;
   :description "Observers walk stream banks recording salmon, redds, and conditions." .
 
-:StreamWalk a :GroundMethod ;
+:StreamWalk a rdfs:Class ;
+  rdfs:subClassOf :GroundMethod ;
   rdfs:label "Stream Walk" ;
   :description "Wading or along-channel walking to observe fish and habitat." .
 
-:SnorkelSurvey a :GroundMethod ;
+:SnorkelSurvey a rdfs:Class ;
+  rdfs:subClassOf :GroundMethod ;
   rdfs:label "Snorkel" ;
   :description "In-water snorkeling to enumerate/identify fish and assess habitat." .
 
-:BoatSurvey a :GroundMethod ;
+:BoatSurvey a rdfs:Class ;
+  rdfs:subClassOf :GroundMethod ;
   rdfs:label "Boat Survey" ;
   :description "Boat-based visual survey of reaches unsuitable for walking/snorkel." .
 
-:ReddCount a :GroundMethod ;
+:ReddCount a rdfs:Class ;
+  rdfs:subClassOf :GroundMethod ;
   rdfs:label "Redd Count" ;
   :description "Standardized enumeration of redds within defined reaches." .
 
-:DeadPitch a :GroundMethod ;
+:DeadPitch a rdfs:Class ;
+  rdfs:subClassOf :GroundMethod ;
   rdfs:label "Dead Pitch" ;
   :description "Carcass (dead fish) tally used for escapement or mortality assessment." .
 
-:StripCount a :GroundMethod ;
+:StripCount a rdfs:Class ;
+  rdfs:subClassOf rdfs:Class ;
+  rdfs:subClassOf :GroundMethod ;
   rdfs:label "Strip Count" ;
   :description "Visual count along a fixed-width strip/transect for index estimates." .
 
-:FenceCount a :GroundMethod ;
+:FenceCount a rdfs:Class ;
+  rdfs:subClassOf :GroundMethod ;
   rdfs:label "Fence Count" ;
   :description "Enumeration at fish fence/weir (passage structure) over time." .
 
 ### Aerial methods
-:AerialFixedWing a :AerialMethod ;
+:AerialFixedWing a rdfs:Class ;
+  rdfs:subClassOf :AerialMethod ;
   rdfs:label "Fixed-wing Aerial Survey" ;
   :description "Aircraft-based visual survey of channels or shorelines." .
 
-:AerialHelicopter a :AerialMethod ;
+:AerialHelicopter a rdfs:Class ;
+  rdfs:subClassOf:AerialMethod ;
   rdfs:label "Helicopter Aerial Survey" ;
   :description "Low-altitude helicopter survey for detailed counts/conditions." .
 
 ### (Optional) align earlier example to Ground
-:VisualSurvey a :GroundMethod ;
+:VisualSurvey a rdfs:Class ;
+  rdfs:subClassOf :GroundMethod ;
   rdfs:label "Visual Survey" .
 
 ### Example waterbody instance (inspection site as a Creek)
